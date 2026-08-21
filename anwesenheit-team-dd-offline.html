@@ -282,7 +282,7 @@ function counts(){
 function buildListText(){
   const present = KADER.filter(([nr])=> data[nr+"-ma"] === "ja");
   const lines = ["Aufgebot:"];
-  present.forEach(([nr,last,first])=> lines.push(last + " " + first));
+  present.forEach(([nr,last,first])=> lines.push(first.split(" ")[0]));
   lines.push("");
   lines.push("Besammlung:");
   return lines.join("\n");
