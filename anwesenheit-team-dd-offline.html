@@ -118,6 +118,7 @@
     background:none;border:1px solid var(--line);color:var(--muted);
     padding:9px 12px;border-radius:9px;font-size:12px;cursor:pointer;
   }
+  .actions{display:flex;gap:8px}
   .status{font-size:11px}
   .legend{padding:0 14px;color:var(--muted);font-size:11px;line-height:1.6}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -154,7 +155,10 @@
 
   <footer>
     <span class="status" id="status">Wird geladen …</span>
-    <button class="reset" id="reset">Woche zurücksetzen</button>
+    <div class="actions">
+      <button class="reset" id="share">Liste teilen</button>
+      <button class="reset" id="reset">Woche zurücksetzen</button>
+    </div>
   </footer>
 </div>
 
@@ -186,9 +190,10 @@ const KADER = [
 const CYCLE = {"":"ja","ja":"nein","nein":""};
 const MARK  = {"":"","ja":"✓","nein":"✗"};
 
+const DAY_LABEL = {di:"Training Dienstag", do:"Training Donnerstag", ma:"Match"};
+
 let monday = mondayOf(new Date());
 let data = {};          // { "6-di":"ja", ... }
-let saveTimer = null;
 
 function mondayOf(d){
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -222,16 +227,12 @@ function load(){
 }
 
 function save(){
-  clearTimeout(saveTimer);
-  setStatus("Speichert …");
-  saveTimer = setTimeout(()=>{
-    try{
-      localStorage.setItem(key(), JSON.stringify(data));
-      setStatus("Gespeichert");
-    }catch(e){
-      setStatus("Speichern fehlgeschlagen");
-    }
-  },200);
+  try{
+    localStorage.setItem(key(), JSON.stringify(data));
+    setStatus("Gespeichert");
+  }catch(e){
+    setStatus("Speichern fehlgeschlagen");
+  }
 }
 
 function render(){
@@ -280,8 +281,38 @@ function counts(){
   });
 }
 
+function buildListText(){
+  const lines = ["Team Dd — KW " + kwOf(monday) + " (" + fmt(monday) + "–" + fmt(addDays(monday,6)) + ")", ""];
+  const dateFor = {di:addDays(monday,1), do:addDays(monday,3), ma:addDays(monday,5)};
+  ["di","do","ma"].forEach(day=>{
+    const present = KADER.filter(([nr])=> data[nr+"-"+day] === "ja");
+    lines.push(DAY_LABEL[day] + " " + fmt(dateFor[day]) + " — dabei (" + present.length + "):");
+    if(present.length){
+      present.forEach(([nr,last,first])=> lines.push(last + " " + first));
+    }else{
+      lines.push("–");
+    }
+    lines.push("");
+  });
+  return lines.join("\n").trim();
+}
+
+async function shareList(){
+  const text = buildListText();
+  if(navigator.share){
+    try{ await navigator.share({ text }); return; }catch(e){ if(e.name === "AbortError") return; }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    setStatus("Liste kopiert");
+  }catch(e){
+    window.prompt("Liste kopieren (Strg/Cmd+C):", text);
+  }
+}
+
 document.getElementById("prev").onclick = ()=>{ monday = addDays(monday,-7); load(); };
 document.getElementById("next").onclick = ()=>{ monday = addDays(monday, 7); load(); };
+document.getElementById("share").onclick = shareList;
 document.getElementById("reset").onclick = ()=>{
   if(!confirm("Alle Einträge dieser Woche löschen?")) return;
   data = {};
