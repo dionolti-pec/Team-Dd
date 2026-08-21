@@ -33,7 +33,7 @@
 
   /* ---------- Kopf ---------- */
   header{
-    padding:18px 14px 12px;
+    padding:calc(18px + env(safe-area-inset-top)) 14px 12px;
     border-bottom:1px solid var(--line);
     background:linear-gradient(180deg,#182430 0%,var(--night) 100%);
   }
@@ -128,9 +128,9 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">Zug 94 · C-Junioren · 3. Stärkeklasse</p>
+    <p class="eyebrow">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
     <h1>Team Dd — Anwesenheit</h1>
-    <p class="sub">Trainer Dion Ramadani &amp; Dionis Djerdja · Training Di/Do</p>
+    <p class="sub">Trainer Dion Ramadani · Training Di/Do</p>
   </header>
 
   <div class="week">
@@ -189,8 +189,6 @@ const KADER = [
 
 const CYCLE = {"":"ja","ja":"nein","nein":""};
 const MARK  = {"":"","ja":"✓","nein":"✗"};
-
-const DAY_LABEL = {di:"Training Dienstag", do:"Training Donnerstag", ma:"Match"};
 
 let monday = mondayOf(new Date());
 let data = {};          // { "6-di":"ja", ... }
@@ -282,19 +280,12 @@ function counts(){
 }
 
 function buildListText(){
-  const lines = ["Team Dd — KW " + kwOf(monday) + " (" + fmt(monday) + "–" + fmt(addDays(monday,6)) + ")", ""];
-  const dateFor = {di:addDays(monday,1), do:addDays(monday,3), ma:addDays(monday,5)};
-  ["di","do","ma"].forEach(day=>{
-    const present = KADER.filter(([nr])=> data[nr+"-"+day] === "ja");
-    lines.push(DAY_LABEL[day] + " " + fmt(dateFor[day]) + " — dabei (" + present.length + "):");
-    if(present.length){
-      present.forEach(([nr,last,first])=> lines.push(last + " " + first));
-    }else{
-      lines.push("–");
-    }
-    lines.push("");
-  });
-  return lines.join("\n").trim();
+  const present = KADER.filter(([nr])=> data[nr+"-ma"] === "ja");
+  const lines = ["Aufgebot:"];
+  present.forEach(([nr,last,first])=> lines.push(last + " " + first));
+  lines.push("");
+  lines.push("Besammlung:");
+  return lines.join("\n");
 }
 
 async function shareList(){
