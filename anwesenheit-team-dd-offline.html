@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Team Dd</title>
+<meta name="theme-color" content="#0E141A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Team Dd">
+<style>
+  :root{
+    --night:#0E141A;
+    --panel:#17212B;
+    --panel2:#1D2934;
+    --line:rgba(255,255,255,.09);
+    --chalk:#EEF3F7;
+    --muted:#7E90A2;
+    --on:#3BD07C;
+    --off:#FF5B49;
+    --match:#FFC53D;
+    --num:#4E6478;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--night);
+    color:var(--chalk);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    padding-bottom:64px;
+  }
+  .wrap{max-width:560px;margin:0 auto}
+
+  /* ---------- Kopf ---------- */
+  header{
+    padding:18px 14px 12px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#182430 0%,var(--night) 100%);
+  }
+  .eyebrow{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 6px;
+  }
+  h1{
+    margin:0;font-size:26px;line-height:1;letter-spacing:-.01em;
+    font-weight:800;font-stretch:condensed;
+  }
+  .sub{margin:6px 0 0;font-size:12px;color:var(--muted)}
+
+  /* ---------- Wochenwahl ---------- */
+  .week{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:var(--night);z-index:5;
+  }
+  .week button{
+    background:var(--panel);border:1px solid var(--line);color:var(--chalk);
+    width:40px;height:40px;border-radius:10px;font-size:18px;line-height:1;
+    cursor:pointer;
+  }
+  .week button:active{background:var(--panel2)}
+  .weeklabel{flex:1;text-align:center}
+  .weeklabel .kw{font-size:15px;font-weight:700}
+  .weeklabel .range{font-size:11px;color:var(--muted);margin-top:2px}
+
+  /* ---------- Spaltenkopf ---------- */
+  .cols{
+    display:grid;grid-template-columns:1fr 58px 58px 58px;
+    gap:6px;padding:8px 14px 6px;
+    position:sticky;top:65px;background:var(--night);z-index:4;
+    border-bottom:1px solid var(--line);
+  }
+  .colhead{text-align:center}
+  .colhead .day{font-size:12px;font-weight:700;letter-spacing:.04em}
+  .colhead .date{font-size:10px;color:var(--muted);margin-top:1px}
+  .colhead .cnt{
+    font-size:11px;margin-top:3px;color:var(--on);font-variant-numeric:tabular-nums;
+  }
+  .colhead.match .day{color:var(--match)}
+
+  /* ---------- Spielerzeilen ---------- */
+  ul{list-style:none;margin:0;padding:4px 0 0}
+  li{
+    display:grid;grid-template-columns:1fr 58px 58px 58px;
+    gap:6px;align-items:center;
+    padding:4px 14px;
+  }
+  li + li{border-top:1px solid rgba(255,255,255,.05)}
+  .player{display:flex;align-items:center;gap:10px;min-width:0}
+  .nr{
+    font-size:17px;font-weight:800;font-stretch:condensed;
+    color:var(--num);width:26px;text-align:right;flex:none;
+    font-variant-numeric:tabular-nums;
+  }
+  .nm{min-width:0}
+  .last{font-size:15px;font-weight:600;line-height:1.15;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .first{font-size:11px;color:var(--muted);line-height:1.2;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  .cell{
+    height:44px;border-radius:11px;border:1px solid var(--line);
+    background:var(--panel);color:var(--muted);
+    font-size:19px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .12s ease,border-color .12s ease,color .12s ease;
+  }
+  .cell[data-v="ja"]{background:rgba(59,208,124,.16);border-color:var(--on);color:var(--on)}
+  .cell[data-v="nein"]{background:rgba(255,91,73,.14);border-color:var(--off);color:var(--off)}
+  .cell:focus-visible{outline:2px solid var(--match);outline-offset:2px}
+
+  /* ---------- Fuss ---------- */
+  footer{
+    padding:16px 14px 24px;color:var(--muted);font-size:11px;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+  }
+  .reset{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    padding:9px 12px;border-radius:9px;font-size:12px;cursor:pointer;
+  }
+  .status{font-size:11px}
+  .legend{padding:0 14px;color:var(--muted);font-size:11px;line-height:1.6}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Zug 94 · C-Junioren · 3. Stärkeklasse</p>
+    <h1>Team Dd — Anwesenheit</h1>
+    <p class="sub">Trainer Dion Ramadani &amp; Dionis Djerdja · Training Di/Do</p>
+  </header>
+
+  <div class="week">
+    <button id="prev" aria-label="Woche zurück">‹</button>
+    <div class="weeklabel">
+      <div class="kw" id="kw">–</div>
+      <div class="range" id="range">–</div>
+    </div>
+    <button id="next" aria-label="Woche vor">›</button>
+  </div>
+
+  <div class="cols">
+    <div></div>
+    <div class="colhead"><div class="day">Di</div><div class="date" id="d-di"></div><div class="cnt" id="c-di">0</div></div>
+    <div class="colhead"><div class="day">Do</div><div class="date" id="d-do"></div><div class="cnt" id="c-do">0</div></div>
+    <div class="colhead match"><div class="day">Match</div><div class="date" id="d-ma"></div><div class="cnt" id="c-ma">0</div></div>
+  </div>
+
+  <ul id="list"></ul>
+
+  <p class="legend">Tippen wechselt: leer → <span style="color:var(--on)">✓ dabei</span> → <span style="color:var(--off)">✗ fehlt</span> → leer. Alles wird pro Woche gespeichert.</p>
+
+  <footer>
+    <span class="status" id="status">Wird geladen …</span>
+    <button class="reset" id="reset">Woche zurücksetzen</button>
+  </footer>
+</div>
+
+<script>
+const KADER = [
+  [1,"Abede","Raee"],
+  [2,"Aikens","Leonidas Patrick"],
+  [3,"Beluli","Arbes"],
+  [4,"Brunner","Mischa"],
+  [5,"Dedaj","Alexander"],
+  [6,"El Yagoubi","Adam"],
+  [8,"Etoski","Emir"],
+  [9,"Huggel","Frederik"],
+  [10,"Kostelac","Lovro Roko"],
+  [11,"Mäkäla","Samuel"],
+  [12,"Misic","Aleksa"],
+  [13,"Monk","Alexandr"],
+  [14,"Okbazghi","Christian"],
+  [15,"Payo","Nevio Sanchez"],
+  [16,"Procopio","Eren Daniele"],
+  [17,"Ramadani","Olti"],
+  [18,"Saratz","Mic-Andri"],
+  [19,"Simic","Jonas"],
+  [20,"Singh","Pravir Partap"],
+  [21,"Turoczy","Elek"],
+  [22,"Theuner","Titus"]
+];
+
+const CYCLE = {"":"ja","ja":"nein","nein":""};
+const MARK  = {"":"","ja":"✓","nein":"✗"};
+
+let monday = mondayOf(new Date());
+let data = {};          // { "6-di":"ja", ... }
+let saveTimer = null;
+
+function mondayOf(d){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diff = (x.getDay() + 6) % 7;
+  x.setDate(x.getDate() - diff);
+  return x;
+}
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function fmt(d){ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."; }
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function kwOf(d){
+  const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  t.setDate(t.getDate() + 3 - ((t.getDay()+6)%7));
+  const first = new Date(t.getFullYear(),0,4);
+  return 1 + Math.round(((t - first)/86400000 - 3 + ((first.getDay()+6)%7))/7);
+}
+function key(){ return "anwesenheit:" + iso(monday); }
+
+function setStatus(t){ document.getElementById("status").textContent = t; }
+
+function load(){
+  try{
+    const raw = localStorage.getItem(key());
+    data = raw ? JSON.parse(raw) : {};
+    setStatus(raw ? "Gespeichert" : "Neue Woche");
+  }catch(e){
+    data = {};
+    setStatus("Speicher nicht verfügbar");
+  }
+  render();
+}
+
+function save(){
+  clearTimeout(saveTimer);
+  setStatus("Speichert …");
+  saveTimer = setTimeout(()=>{
+    try{
+      localStorage.setItem(key(), JSON.stringify(data));
+      setStatus("Gespeichert");
+    }catch(e){
+      setStatus("Speichern fehlgeschlagen");
+    }
+  },200);
+}
+
+function render(){
+  document.getElementById("kw").textContent    = "KW " + kwOf(monday);
+  document.getElementById("range").textContent = fmt(monday) + " – " + fmt(addDays(monday,6));
+  document.getElementById("d-di").textContent  = fmt(addDays(monday,1));
+  document.getElementById("d-do").textContent  = fmt(addDays(monday,3));
+  document.getElementById("d-ma").textContent  = fmt(addDays(monday,5));
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  KADER.forEach(([nr,last,first])=>{
+    const li = document.createElement("li");
+    const p  = document.createElement("div");
+    p.className = "player";
+    p.innerHTML = '<span class="nr">'+nr+'</span><span class="nm"><span class="last">'+last+
+                  '</span><span class="first">'+first+'</span></span>';
+    li.appendChild(p);
+    ["di","do","ma"].forEach(day=>{
+      const k = nr+"-"+day;
+      const v = data[k] || "";
+      const b = document.createElement("button");
+      b.className = "cell";
+      b.dataset.v = v;
+      b.textContent = MARK[v];
+      b.setAttribute("aria-label", last+" "+day.toUpperCase());
+      b.onclick = ()=>{
+        const nv = CYCLE[data[k] || ""];
+        if(nv) data[k] = nv; else delete data[k];
+        b.dataset.v = nv;
+        b.textContent = MARK[nv];
+        counts();
+        save();
+      };
+      li.appendChild(b);
+    });
+    list.appendChild(li);
+  });
+  counts();
+}
+
+function counts(){
+  ["di","do","ma"].forEach(day=>{
+    const n = KADER.filter(([nr])=> data[nr+"-"+day] === "ja").length;
+    document.getElementById("c-"+day).textContent = n + "/" + KADER.length;
+  });
+}
+
+document.getElementById("prev").onclick = ()=>{ monday = addDays(monday,-7); load(); };
+document.getElementById("next").onclick = ()=>{ monday = addDays(monday, 7); load(); };
+document.getElementById("reset").onclick = ()=>{
+  if(!confirm("Alle Einträge dieser Woche löschen?")) return;
+  data = {};
+  render();
+  save();
+};
+
+load();
+</script>
+</body>
+</html>
