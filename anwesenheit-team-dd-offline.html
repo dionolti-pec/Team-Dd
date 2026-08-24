@@ -27,7 +27,7 @@
     background:var(--night);
     color:var(--chalk);
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
-    padding-bottom:64px;
+    padding-bottom:calc(40px + env(safe-area-inset-bottom));
   }
   .wrap{max-width:560px;margin:0 auto}
 
@@ -47,11 +47,23 @@
   }
   .sub{margin:6px 0 0;font-size:12px;color:var(--muted)}
 
+  /* ---------- Reiter ---------- */
+  .tabs{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    position:sticky;top:0;z-index:6;
+    background:var(--night);border-bottom:1px solid var(--line);
+  }
+  .tabs button{
+    background:none;border:0;border-bottom:2px solid transparent;
+    color:var(--muted);font-size:13px;font-weight:600;
+    padding:13px 4px;cursor:pointer;font-family:inherit;
+  }
+  .tabs button[aria-selected="true"]{color:var(--chalk);border-bottom-color:var(--match)}
+
   /* ---------- Wochenwahl ---------- */
   .week{
     display:flex;align-items:center;gap:10px;
     padding:12px 14px;border-bottom:1px solid var(--line);
-    position:sticky;top:0;background:var(--night);z-index:5;
   }
   .week button{
     background:var(--panel);border:1px solid var(--line);color:var(--chalk);
@@ -67,7 +79,7 @@
   .cols{
     display:grid;grid-template-columns:1fr 58px 58px 58px;
     gap:6px;padding:8px 14px 6px;
-    position:sticky;top:65px;background:var(--night);z-index:4;
+    position:sticky;top:45px;background:var(--night);z-index:4;
     border-bottom:1px solid var(--line);
   }
   .colhead{text-align:center}
@@ -80,12 +92,12 @@
 
   /* ---------- Spielerzeilen ---------- */
   ul{list-style:none;margin:0;padding:4px 0 0}
-  li{
+  .roster li{
     display:grid;grid-template-columns:1fr 58px 58px 58px;
     gap:6px;align-items:center;
     padding:4px 14px;
   }
-  li + li{border-top:1px solid rgba(255,255,255,.05)}
+  .roster li + li{border-top:1px solid rgba(255,255,255,.05)}
   .player{display:flex;align-items:center;gap:10px;min-width:0}
   .nr{
     font-size:17px;font-weight:800;font-stretch:condensed;
@@ -109,18 +121,86 @@
   .cell[data-v="nein"]{background:rgba(255,91,73,.14);border-color:var(--off);color:var(--off)}
   .cell:focus-visible{outline:2px solid var(--match);outline-offset:2px}
 
+  /* ---------- Spieltag-Felder ---------- */
+  .card{
+    margin:12px 14px;padding:14px;border:1px solid var(--line);
+    border-radius:13px;background:var(--panel);
+  }
+  .card h2{
+    margin:0 0 10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;
+  }
+  .field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+  .field:last-child{margin-bottom:0}
+  .field label{font-size:11px;color:var(--muted)}
+  input,select,textarea{
+    background:var(--panel2);border:1px solid var(--line);color:var(--chalk);
+    border-radius:9px;padding:10px 11px;font-size:15px;font-family:inherit;
+    width:100%;
+  }
+  textarea{min-height:74px;resize:vertical;line-height:1.45}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--match);outline-offset:1px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* ---------- Knöpfe ---------- */
+  .btn{
+    background:none;border:1px solid var(--line);color:var(--muted);
+    padding:10px 13px;border-radius:9px;font-size:13px;cursor:pointer;
+    font-family:inherit;
+  }
+  .btn:active{background:var(--panel2)}
+  .btn.primary{border-color:var(--match);color:var(--match)}
+  .btn.danger{border-color:rgba(255,91,73,.5);color:var(--off)}
+  .btn.wide{width:100%}
+
   /* ---------- Fuss ---------- */
   footer{
     padding:16px 14px 24px;color:var(--muted);font-size:11px;
     display:flex;justify-content:space-between;align-items:center;gap:12px;
+    flex-wrap:wrap;
   }
-  .reset{
-    background:none;border:1px solid var(--line);color:var(--muted);
-    padding:9px 12px;border-radius:9px;font-size:12px;cursor:pointer;
-  }
-  .actions{display:flex;gap:8px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap}
   .status{font-size:11px}
   .legend{padding:0 14px;color:var(--muted);font-size:11px;line-height:1.6}
+
+  /* ---------- Listen (Spieler / Analyse) ---------- */
+  .picklist li{
+    padding:0;border-top:1px solid rgba(255,255,255,.05);
+  }
+  .picklist li:first-child{border-top:0}
+  .pick{
+    display:flex;align-items:center;gap:10px;width:100%;
+    background:none;border:0;color:var(--chalk);
+    padding:13px 14px;cursor:pointer;text-align:left;font-family:inherit;
+  }
+  .pick:active{background:var(--panel)}
+  .pick .meta{margin-left:auto;font-size:11px;color:var(--muted);flex:none;text-align:right}
+  .chev{color:var(--num);font-size:17px;flex:none}
+  .empty{padding:22px 14px;color:var(--muted);font-size:13px;text-align:center}
+
+  .entry{
+    margin:0 14px 10px;padding:12px;border:1px solid var(--line);
+    border-radius:11px;background:var(--panel);
+  }
+  .entry .when{font-size:11px;color:var(--muted);margin-bottom:5px}
+  .entry .what{font-size:14px;line-height:1.5;white-space:pre-wrap}
+  .entry .del{margin-top:9px}
+
+  /* ---------- Detailansicht ---------- */
+  .detailhead{
+    display:flex;align-items:center;gap:11px;
+    padding:12px 14px;border-bottom:1px solid var(--line);
+    position:sticky;top:45px;background:var(--night);z-index:4;
+  }
+  .detailhead .who{min-width:0;flex:1}
+  .detailhead .who .n{font-size:17px;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .detailhead .who .s{font-size:11px;color:var(--muted)}
+  .back{
+    background:var(--panel);border:1px solid var(--line);color:var(--chalk);
+    width:38px;height:38px;border-radius:10px;font-size:17px;cursor:pointer;flex:none;
+  }
+  [hidden]{display:none!important}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -129,37 +209,198 @@
 
   <header>
     <p class="eyebrow">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
-    <h1>Team Dd — Anwesenheit</h1>
+    <h1>Team Dd</h1>
     <p class="sub">Trainer Dion Ramadani · Training Di/Do</p>
   </header>
 
-  <div class="week">
-    <button id="prev" aria-label="Woche zurück">‹</button>
-    <div class="weeklabel">
-      <div class="kw" id="kw">–</div>
-      <div class="range" id="range">–</div>
-    </div>
-    <button id="next" aria-label="Woche vor">›</button>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-anw" aria-selected="true">Anwesenheit</button>
+    <button role="tab" id="tab-spl" aria-selected="false">Spieler</button>
+    <button role="tab" id="tab-ana" aria-selected="false">Analyse</button>
   </div>
 
-  <div class="cols">
-    <div></div>
-    <div class="colhead"><div class="day">Di</div><div class="date" id="d-di"></div><div class="cnt" id="c-di">0</div></div>
-    <div class="colhead"><div class="day">Do</div><div class="date" id="d-do"></div><div class="cnt" id="c-do">0</div></div>
-    <div class="colhead match"><div class="day">Match</div><div class="date" id="d-ma"></div><div class="cnt" id="c-ma">0</div></div>
-  </div>
-
-  <ul id="list"></ul>
-
-  <p class="legend">Tippen wechselt: leer → <span style="color:var(--on)">✓ dabei</span> → <span style="color:var(--off)">✗ fehlt</span> → leer. Alles wird pro Woche gespeichert.</p>
-
-  <footer>
-    <span class="status" id="status">Wird geladen …</span>
-    <div class="actions">
-      <button class="reset" id="share">Liste teilen</button>
-      <button class="reset" id="reset">Woche zurücksetzen</button>
+  <!-- ============ Anwesenheit ============ -->
+  <section id="view-anw">
+    <div class="week">
+      <button id="prev" aria-label="Woche zurück">‹</button>
+      <div class="weeklabel">
+        <div class="kw" id="kw">–</div>
+        <div class="range" id="range">–</div>
+      </div>
+      <button id="next" aria-label="Woche vor">›</button>
     </div>
-  </footer>
+
+    <div class="cols">
+      <div></div>
+      <div class="colhead"><div class="day">Di</div><div class="date" id="d-di"></div><div class="cnt" id="c-di">0</div></div>
+      <div class="colhead"><div class="day">Do</div><div class="date" id="d-do"></div><div class="cnt" id="c-do">0</div></div>
+      <div class="colhead match"><div class="day">Match</div><div class="date" id="d-ma"></div><div class="cnt" id="c-ma">0</div></div>
+    </div>
+
+    <ul id="list" class="roster"></ul>
+
+    <p class="legend">Alle sind standardmässig <span style="color:var(--on)">✓ dabei</span>. Tippen schaltet auf <span style="color:var(--off)">✗ fehlt</span> und zurück.</p>
+
+    <div class="card">
+      <h2>Spieltag</h2>
+      <div class="field">
+        <label for="f-gegner">Gegner</label>
+        <input id="f-gegner" type="text" placeholder="z.B. FC Cham b" autocomplete="off">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="f-zeit">Spielzeit</label>
+          <input id="f-zeit" type="text" placeholder="14:00" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-treff">Besammlung</label>
+          <input id="f-treff" type="text" placeholder="13:00" autocomplete="off">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-ort">Spielort</label>
+        <input id="f-ort" type="text" placeholder="z.B. Sportplatz Herti, Zug" autocomplete="off">
+      </div>
+    </div>
+
+    <footer>
+      <span class="status" id="status">Wird geladen …</span>
+      <div class="actions">
+        <button class="btn primary" id="share">Aufgebot teilen</button>
+        <button class="btn" id="reset">Woche zurücksetzen</button>
+      </div>
+    </footer>
+  </section>
+
+  <!-- ============ Spieler ============ -->
+  <section id="view-spl" hidden>
+    <div id="spl-list">
+      <ul id="playerlist" class="picklist"></ul>
+    </div>
+
+    <div id="spl-detail" hidden>
+      <div class="detailhead">
+        <button class="back" id="spl-back" aria-label="Zurück">‹</button>
+        <div class="who">
+          <div class="n" id="spl-name">–</div>
+          <div class="s" id="spl-nr">–</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Profil</h2>
+        <div class="row2">
+          <div class="field">
+            <label for="p-pos">Position</label>
+            <select id="p-pos">
+              <option value="">–</option>
+              <option>Torhüter</option>
+              <option>Innenverteidiger</option>
+              <option>Aussenverteidiger</option>
+              <option>Defensives Mittelfeld</option>
+              <option>Zentrales Mittelfeld</option>
+              <option>Offensives Mittelfeld</option>
+              <option>Flügel</option>
+              <option>Stürmer</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="p-fuss">Starker Fuss</label>
+            <select id="p-fuss">
+              <option value="">–</option>
+              <option>Rechts</option>
+              <option>Links</option>
+              <option>Beidfüssig</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="p-notiz">Notizen zum Spieler</label>
+          <textarea id="p-notiz" placeholder="Stärken, Entwicklungsziele, Besonderes …"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Logbuch — neuer Eintrag</h2>
+        <div class="field">
+          <label for="p-logdatum">Datum</label>
+          <input id="p-logdatum" type="date">
+        </div>
+        <div class="field">
+          <label for="p-logtext">Was ist aufgefallen?</label>
+          <textarea id="p-logtext" placeholder="z.B. Sehr gutes Pressing, mutig im Eins-gegen-Eins …"></textarea>
+        </div>
+        <button class="btn primary wide" id="p-logadd">Eintrag speichern</button>
+      </div>
+
+      <h2 style="margin:18px 14px 10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)">Logbuch</h2>
+      <div id="p-logs"></div>
+    </div>
+  </section>
+
+  <!-- ============ Analyse ============ -->
+  <section id="view-ana" hidden>
+    <div id="ana-list">
+      <div style="padding:12px 14px">
+        <button class="btn primary wide" id="ana-new">Neue Spielanalyse</button>
+      </div>
+      <div id="ana-items"></div>
+    </div>
+
+    <div id="ana-detail" hidden>
+      <div class="detailhead">
+        <button class="back" id="ana-back" aria-label="Zurück">‹</button>
+        <div class="who">
+          <div class="n">Spielanalyse</div>
+          <div class="s" id="ana-when">–</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Spiel</h2>
+        <div class="row2">
+          <div class="field">
+            <label for="a-datum">Datum</label>
+            <input id="a-datum" type="date">
+          </div>
+          <div class="field">
+            <label for="a-resultat">Resultat</label>
+            <input id="a-resultat" type="text" placeholder="3:2" autocomplete="off">
+          </div>
+        </div>
+        <div class="field">
+          <label for="a-gegner">Gegner</label>
+          <input id="a-gegner" type="text" placeholder="z.B. FC Cham b" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Das lief gut</h2>
+        <div class="field">
+          <textarea id="a-gut" placeholder="Was hat funktioniert? Wer ist positiv aufgefallen?"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Das war schlecht</h2>
+        <div class="field">
+          <textarea id="a-schlecht" placeholder="Wo lagen die Probleme? Welche Situationen wiederholten sich?"></textarea>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Fokus fürs Training</h2>
+        <div class="field">
+          <textarea id="a-fokus" placeholder="Was üben wir am Dienstag/Donnerstag?"></textarea>
+        </div>
+      </div>
+
+      <div style="padding:0 14px 22px;display:flex;gap:8px">
+        <button class="btn primary" id="a-share">Analyse teilen</button>
+        <button class="btn danger" id="a-del">Analyse löschen</button>
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -187,131 +428,478 @@ const KADER = [
   [22,"Theuner","Titus"]
 ];
 
-const CYCLE = {"":"ja","ja":"nein","nein":""};
-const MARK  = {"":"","ja":"✓","nein":"✗"};
+const DAYS = ["di","do","ma"];
 
 let monday = mondayOf(new Date());
-let data = {};          // { "6-di":"ja", ... }
+let week   = blankWeek();   // { att:{"6-di":"nein"}, spiel:{gegner,zeit,treff,ort} }
+let openPlayer = null;
+let openAnalyse = null;
 
+/* ---------- Datum ---------- */
 function mondayOf(d){
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const diff = (x.getDay() + 6) % 7;
-  x.setDate(x.getDate() - diff);
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
   return x;
 }
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function fmt(d){ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."; }
 function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function fmtIso(s){
+  if(!s) return "";
+  const p = s.split("-");
+  return p.length === 3 ? p[2]+"."+p[1]+"."+p[0] : s;
+}
 function kwOf(d){
   const t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   t.setDate(t.getDate() + 3 - ((t.getDay()+6)%7));
   const first = new Date(t.getFullYear(),0,4);
   return 1 + Math.round(((t - first)/86400000 - 3 + ((first.getDay()+6)%7))/7);
 }
-function key(){ return "anwesenheit:" + iso(monday); }
 
-function setStatus(t){ document.getElementById("status").textContent = t; }
+/* ---------- Speicher ---------- */
+function blankWeek(){ return { att:{}, spiel:{gegner:"",zeit:"",treff:"",ort:""} }; }
+function weekKey(){ return "td:week:" + iso(monday); }
 
-function load(){
+function readJSON(k, fallback){
   try{
-    const raw = localStorage.getItem(key());
-    data = raw ? JSON.parse(raw) : {};
-    setStatus(raw ? "Gespeichert" : "Neue Woche");
-  }catch(e){
-    data = {};
-    setStatus("Speicher nicht verfügbar");
-  }
-  render();
+    const raw = localStorage.getItem(k);
+    return raw ? JSON.parse(raw) : fallback;
+  }catch(e){ return fallback; }
 }
-
-function save(){
+function writeJSON(k, v){
   try{
-    localStorage.setItem(key(), JSON.stringify(data));
+    localStorage.setItem(k, JSON.stringify(v));
     setStatus("Gespeichert");
+    return true;
   }catch(e){
     setStatus("Speichern fehlgeschlagen");
+    return false;
   }
 }
+function setStatus(t){ document.getElementById("status").textContent = t; }
 
-function render(){
+function loadWeek(){
+  const stored = readJSON(weekKey(), null);
+  if(stored){
+    week = { att: stored.att || {}, spiel: Object.assign(blankWeek().spiel, stored.spiel) };
+    setStatus("Gespeichert");
+  }else{
+    const legacy = readJSON("anwesenheit:" + iso(monday), null);
+    week = blankWeek();
+    if(legacy){
+      Object.keys(legacy).forEach(k=>{ if(legacy[k] === "nein") week.att[k] = "nein"; });
+      setStatus("Übernommen");
+    }else{
+      setStatus("Neue Woche");
+    }
+  }
+  renderWeek();
+}
+function saveWeek(){ writeJSON(weekKey(), week); }
+
+/* ---------- Anwesenheit ---------- */
+function attOf(nr, day){ return week.att[nr+"-"+day] === "nein" ? "nein" : "ja"; }
+
+function renderWeek(){
   document.getElementById("kw").textContent    = "KW " + kwOf(monday);
   document.getElementById("range").textContent = fmt(monday) + " – " + fmt(addDays(monday,6));
   document.getElementById("d-di").textContent  = fmt(addDays(monday,1));
   document.getElementById("d-do").textContent  = fmt(addDays(monday,3));
   document.getElementById("d-ma").textContent  = fmt(addDays(monday,5));
 
+  document.getElementById("f-gegner").value = week.spiel.gegner;
+  document.getElementById("f-zeit").value   = week.spiel.zeit;
+  document.getElementById("f-treff").value  = week.spiel.treff;
+  document.getElementById("f-ort").value    = week.spiel.ort;
+
   const list = document.getElementById("list");
-  list.innerHTML = "";
+  list.textContent = "";
   KADER.forEach(([nr,last,first])=>{
     const li = document.createElement("li");
-    const p  = document.createElement("div");
+
+    const p = document.createElement("div");
     p.className = "player";
-    p.innerHTML = '<span class="nr">'+nr+'</span><span class="nm"><span class="last">'+last+
-                  '</span><span class="first">'+first+'</span></span>';
+    const sNr = document.createElement("span");
+    sNr.className = "nr";
+    sNr.textContent = nr;
+    const sNm = document.createElement("span");
+    sNm.className = "nm";
+    const sLast = document.createElement("span");
+    sLast.className = "last";
+    sLast.textContent = last;
+    const sFirst = document.createElement("span");
+    sFirst.className = "first";
+    sFirst.textContent = first;
+    sNm.append(sLast, sFirst);
+    p.append(sNr, sNm);
     li.appendChild(p);
-    ["di","do","ma"].forEach(day=>{
-      const k = nr+"-"+day;
-      const v = data[k] || "";
+
+    DAYS.forEach(day=>{
       const b = document.createElement("button");
       b.className = "cell";
+      const v = attOf(nr, day);
       b.dataset.v = v;
-      b.textContent = MARK[v];
-      b.setAttribute("aria-label", last+" "+day.toUpperCase());
+      b.textContent = v === "ja" ? "✓" : "✗";
+      b.setAttribute("aria-label", last + " " + day.toUpperCase());
       b.onclick = ()=>{
-        const nv = CYCLE[data[k] || ""];
-        if(nv) data[k] = nv; else delete data[k];
+        const nv = attOf(nr, day) === "ja" ? "nein" : "ja";
+        if(nv === "nein") week.att[nr+"-"+day] = "nein";
+        else delete week.att[nr+"-"+day];
         b.dataset.v = nv;
-        b.textContent = MARK[nv];
+        b.textContent = nv === "ja" ? "✓" : "✗";
         counts();
-        save();
+        saveWeek();
       };
       li.appendChild(b);
     });
+
     list.appendChild(li);
   });
   counts();
 }
 
 function counts(){
-  ["di","do","ma"].forEach(day=>{
-    const n = KADER.filter(([nr])=> data[nr+"-"+day] === "ja").length;
+  DAYS.forEach(day=>{
+    const n = KADER.filter(([nr])=> attOf(nr, day) === "ja").length;
     document.getElementById("c-"+day).textContent = n + "/" + KADER.length;
   });
 }
 
+function bindSpielFeld(id, prop){
+  document.getElementById(id).oninput = (e)=>{
+    week.spiel[prop] = e.target.value;
+    saveWeek();
+  };
+}
+
+/* ---------- Aufgebot teilen ---------- */
 function buildListText(){
-  const present = KADER.filter(([nr])=> data[nr+"-ma"] === "ja");
   const lines = ["Aufgebot:"];
-  present.forEach(([nr,last,first])=> lines.push(first.split(" ")[0]));
+  KADER.filter(([nr])=> attOf(nr,"ma") === "ja")
+       .forEach(([nr,last,first])=> lines.push(first.split(" ")[0]));
   lines.push("");
-  lines.push("Besammlung:");
+  const s = week.spiel;
+  lines.push("Besammlung:" + (s.treff ? " " + s.treff : ""));
+  if(s.zeit)   lines.push("Spielzeit: " + s.zeit);
+  if(s.ort)    lines.push("Spielort: " + s.ort);
+  if(s.gegner) lines.push("Gegner: " + s.gegner);
   return lines.join("\n");
 }
 
-async function shareList(){
-  const text = buildListText();
+async function shareText(text){
   if(navigator.share){
     try{ await navigator.share({ text }); return; }catch(e){ if(e.name === "AbortError") return; }
   }
   try{
     await navigator.clipboard.writeText(text);
-    setStatus("Liste kopiert");
+    setStatus("Kopiert");
   }catch(e){
-    window.prompt("Liste kopieren (Strg/Cmd+C):", text);
+    window.prompt("Text kopieren (Strg/Cmd+C):", text);
   }
 }
 
-document.getElementById("prev").onclick = ()=>{ monday = addDays(monday,-7); load(); };
-document.getElementById("next").onclick = ()=>{ monday = addDays(monday, 7); load(); };
-document.getElementById("share").onclick = shareList;
-document.getElementById("reset").onclick = ()=>{
-  if(!confirm("Alle Einträge dieser Woche löschen?")) return;
-  data = {};
-  render();
-  save();
+/* ---------- Spieler ---------- */
+function profileKey(nr){ return "td:profil:" + nr; }
+function logKey(nr){ return "td:log:" + nr; }
+
+function renderPlayerList(){
+  const ul = document.getElementById("playerlist");
+  ul.textContent = "";
+  KADER.forEach(([nr,last,first])=>{
+    const li = document.createElement("li");
+    const b  = document.createElement("button");
+    b.className = "pick";
+
+    const sNr = document.createElement("span");
+    sNr.className = "nr";
+    sNr.textContent = nr;
+
+    const sNm = document.createElement("span");
+    sNm.className = "nm";
+    const sLast = document.createElement("span");
+    sLast.className = "last";
+    sLast.textContent = last;
+    const sFirst = document.createElement("span");
+    sFirst.className = "first";
+    sFirst.textContent = first;
+    sNm.append(sLast, sFirst);
+
+    const prof = readJSON(profileKey(nr), {pos:"",fuss:"",notiz:""});
+    const logs = readJSON(logKey(nr), []);
+    const meta = document.createElement("span");
+    meta.className = "meta";
+    const bits = [];
+    if(prof.pos) bits.push(prof.pos);
+    if(logs.length) bits.push(logs.length + (logs.length === 1 ? " Eintrag" : " Einträge"));
+    meta.textContent = bits.join(" · ");
+
+    const chev = document.createElement("span");
+    chev.className = "chev";
+    chev.textContent = "›";
+
+    b.append(sNr, sNm, meta, chev);
+    b.onclick = ()=> openPlayerDetail(nr);
+    li.appendChild(b);
+    ul.appendChild(li);
+  });
+}
+
+function openPlayerDetail(nr){
+  const entry = KADER.find(p=> p[0] === nr);
+  if(!entry) return;
+  openPlayer = nr;
+
+  document.getElementById("spl-name").textContent = entry[1] + " " + entry[2];
+  document.getElementById("spl-nr").textContent   = "Nr. " + nr;
+
+  const prof = readJSON(profileKey(nr), {pos:"",fuss:"",notiz:""});
+  document.getElementById("p-pos").value   = prof.pos || "";
+  document.getElementById("p-fuss").value  = prof.fuss || "";
+  document.getElementById("p-notiz").value = prof.notiz || "";
+
+  document.getElementById("p-logdatum").value = iso(new Date());
+  document.getElementById("p-logtext").value  = "";
+
+  renderLogs();
+  document.getElementById("spl-list").hidden   = true;
+  document.getElementById("spl-detail").hidden = false;
+  window.scrollTo(0,0);
+}
+
+function saveProfile(){
+  if(openPlayer === null) return;
+  writeJSON(profileKey(openPlayer), {
+    pos:   document.getElementById("p-pos").value,
+    fuss:  document.getElementById("p-fuss").value,
+    notiz: document.getElementById("p-notiz").value
+  });
+}
+
+function renderLogs(){
+  const box = document.getElementById("p-logs");
+  box.textContent = "";
+  const logs = readJSON(logKey(openPlayer), []);
+  if(!logs.length){
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Noch keine Einträge.";
+    box.appendChild(p);
+    return;
+  }
+  logs.slice().sort((a,b)=> (b.d||"").localeCompare(a.d||"")).forEach(item=>{
+    const div = document.createElement("div");
+    div.className = "entry";
+    const when = document.createElement("div");
+    when.className = "when";
+    when.textContent = fmtIso(item.d);
+    const what = document.createElement("div");
+    what.className = "what";
+    what.textContent = item.t;
+    const del = document.createElement("button");
+    del.className = "btn danger del";
+    del.textContent = "Löschen";
+    del.onclick = ()=>{
+      if(!confirm("Diesen Eintrag löschen?")) return;
+      const rest = readJSON(logKey(openPlayer), []).filter(x=> x.id !== item.id);
+      writeJSON(logKey(openPlayer), rest);
+      renderLogs();
+      renderPlayerList();
+    };
+    div.append(when, what, del);
+    box.appendChild(div);
+  });
+}
+
+function addLog(){
+  const text = document.getElementById("p-logtext").value.trim();
+  if(!text){ setStatus("Text fehlt"); return; }
+  const logs = readJSON(logKey(openPlayer), []);
+  logs.push({
+    id: Date.now() + "-" + Math.random().toString(36).slice(2,8),
+    d:  document.getElementById("p-logdatum").value || iso(new Date()),
+    t:  text
+  });
+  writeJSON(logKey(openPlayer), logs);
+  document.getElementById("p-logtext").value = "";
+  renderLogs();
+  renderPlayerList();
+}
+
+/* ---------- Analyse ---------- */
+function allAnalysen(){ return readJSON("td:analysen", []); }
+function saveAnalysen(list){ writeJSON("td:analysen", list); }
+
+function renderAnalyseList(){
+  const box = document.getElementById("ana-items");
+  box.textContent = "";
+  const list = allAnalysen().slice().sort((a,b)=> (b.datum||"").localeCompare(a.datum||""));
+  if(!list.length){
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Noch keine Spielanalyse erfasst.";
+    box.appendChild(p);
+    return;
+  }
+  const ul = document.createElement("ul");
+  ul.className = "picklist";
+  list.forEach(a=>{
+    const li = document.createElement("li");
+    const b  = document.createElement("button");
+    b.className = "pick";
+
+    const nm = document.createElement("span");
+    nm.className = "nm";
+    const t1 = document.createElement("span");
+    t1.className = "last";
+    t1.textContent = a.gegner || "Ohne Gegner";
+    const t2 = document.createElement("span");
+    t2.className = "first";
+    t2.textContent = fmtIso(a.datum);
+    nm.append(t1, t2);
+
+    const meta = document.createElement("span");
+    meta.className = "meta";
+    meta.textContent = a.resultat || "";
+
+    const chev = document.createElement("span");
+    chev.className = "chev";
+    chev.textContent = "›";
+
+    b.append(nm, meta, chev);
+    b.onclick = ()=> openAnalyseDetail(a.id);
+    li.appendChild(b);
+    ul.appendChild(li);
+  });
+  box.appendChild(ul);
+}
+
+function openAnalyseDetail(id){
+  const a = allAnalysen().find(x=> x.id === id);
+  if(!a) return;
+  openAnalyse = id;
+  document.getElementById("ana-when").textContent  = [fmtIso(a.datum), a.gegner].filter(Boolean).join(" · ") || "Neu";
+  document.getElementById("a-datum").value    = a.datum || "";
+  document.getElementById("a-gegner").value   = a.gegner || "";
+  document.getElementById("a-resultat").value = a.resultat || "";
+  document.getElementById("a-gut").value      = a.gut || "";
+  document.getElementById("a-schlecht").value = a.schlecht || "";
+  document.getElementById("a-fokus").value    = a.fokus || "";
+  document.getElementById("ana-list").hidden   = true;
+  document.getElementById("ana-detail").hidden = false;
+  window.scrollTo(0,0);
+}
+
+function saveAnalyse(){
+  if(openAnalyse === null) return;
+  const list = allAnalysen();
+  const a = list.find(x=> x.id === openAnalyse);
+  if(!a) return;
+  a.datum    = document.getElementById("a-datum").value;
+  a.gegner   = document.getElementById("a-gegner").value;
+  a.resultat = document.getElementById("a-resultat").value;
+  a.gut      = document.getElementById("a-gut").value;
+  a.schlecht = document.getElementById("a-schlecht").value;
+  a.fokus    = document.getElementById("a-fokus").value;
+  saveAnalysen(list);
+  document.getElementById("ana-when").textContent =
+    [fmtIso(a.datum), a.gegner].filter(Boolean).join(" · ") || "Neu";
+}
+
+function buildAnalyseText(){
+  const a = allAnalysen().find(x=> x.id === openAnalyse);
+  if(!a) return "";
+  const lines = ["Spielanalyse " + (a.gegner || "") + (a.datum ? " — " + fmtIso(a.datum) : "")];
+  if(a.resultat) lines.push("Resultat: " + a.resultat);
+  if(a.gut){      lines.push("", "Das lief gut:", a.gut); }
+  if(a.schlecht){ lines.push("", "Das war schlecht:", a.schlecht); }
+  if(a.fokus){    lines.push("", "Fokus fürs Training:", a.fokus); }
+  return lines.join("\n");
+}
+
+/* ---------- Reiter ---------- */
+const VIEWS = {
+  "tab-anw": "view-anw",
+  "tab-spl": "view-spl",
+  "tab-ana": "view-ana"
 };
 
-load();
+function showTab(tabId){
+  Object.keys(VIEWS).forEach(t=>{
+    const active = t === tabId;
+    document.getElementById(t).setAttribute("aria-selected", active ? "true" : "false");
+    document.getElementById(VIEWS[t]).hidden = !active;
+  });
+  if(tabId === "tab-spl") renderPlayerList();
+  if(tabId === "tab-ana") renderAnalyseList();
+  window.scrollTo(0,0);
+}
+
+/* ---------- Verdrahtung ---------- */
+document.getElementById("prev").onclick = ()=>{ monday = addDays(monday,-7); loadWeek(); };
+document.getElementById("next").onclick = ()=>{ monday = addDays(monday, 7); loadWeek(); };
+document.getElementById("share").onclick = ()=> shareText(buildListText());
+document.getElementById("reset").onclick = ()=>{
+  if(!confirm("Alle Einträge dieser Woche zurücksetzen?")) return;
+  week = blankWeek();
+  renderWeek();
+  saveWeek();
+};
+
+bindSpielFeld("f-gegner","gegner");
+bindSpielFeld("f-zeit","zeit");
+bindSpielFeld("f-treff","treff");
+bindSpielFeld("f-ort","ort");
+
+Object.keys(VIEWS).forEach(t=>{
+  document.getElementById(t).onclick = ()=> showTab(t);
+});
+
+document.getElementById("spl-back").onclick = ()=>{
+  openPlayer = null;
+  document.getElementById("spl-detail").hidden = true;
+  document.getElementById("spl-list").hidden   = false;
+  renderPlayerList();
+  window.scrollTo(0,0);
+};
+["p-pos","p-fuss","p-notiz"].forEach(id=>{
+  document.getElementById(id).onchange = saveProfile;
+});
+document.getElementById("p-notiz").oninput = saveProfile;
+document.getElementById("p-logadd").onclick = addLog;
+
+document.getElementById("ana-new").onclick = ()=>{
+  const list = allAnalysen();
+  const a = {
+    id: Date.now() + "-" + Math.random().toString(36).slice(2,8),
+    datum: iso(addDays(monday,5)),
+    gegner: week.spiel.gegner || "",
+    resultat:"", gut:"", schlecht:"", fokus:""
+  };
+  list.push(a);
+  saveAnalysen(list);
+  openAnalyseDetail(a.id);
+};
+document.getElementById("ana-back").onclick = ()=>{
+  openAnalyse = null;
+  document.getElementById("ana-detail").hidden = true;
+  document.getElementById("ana-list").hidden   = false;
+  renderAnalyseList();
+  window.scrollTo(0,0);
+};
+["a-datum","a-gegner","a-resultat","a-gut","a-schlecht","a-fokus"].forEach(id=>{
+  document.getElementById(id).oninput = saveAnalyse;
+});
+document.getElementById("a-share").onclick = ()=> shareText(buildAnalyseText());
+document.getElementById("a-del").onclick = ()=>{
+  if(!confirm("Diese Spielanalyse löschen?")) return;
+  saveAnalysen(allAnalysen().filter(x=> x.id !== openAnalyse));
+  openAnalyse = null;
+  document.getElementById("ana-detail").hidden = true;
+  document.getElementById("ana-list").hidden   = false;
+  renderAnalyseList();
+};
+
+loadWeek();
 </script>
 </body>
 </html>
