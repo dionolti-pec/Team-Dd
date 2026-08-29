@@ -766,7 +766,7 @@ function kwOf(d){
 }
 function spieler(nr){ return KADER.find(p=> p[0] === nr); }
 function vorname(nr){ const p=spieler(nr); return p ? p[2].split(" ")[0] : ""; }
-function kurzname(nr){ const p=spieler(nr); return p ? p[2].split(" ")[0]+" "+p[1] : ""; }
+function kurzname(nr){ return vorname(nr); }
 
 /* ---------- Speicher ---------- */
 function blankWeek(){
@@ -887,7 +887,7 @@ function renderWeek(){
     nm.className = "nm";
     const n1 = document.createElement("span");
     n1.className = "n1";
-    n1.textContent = first.split(" ")[0] + " " + last;
+    n1.textContent = first.split(" ")[0];
     nm.appendChild(n1);
 
     const v = istVerletzt(nr, tagIso("ma")) || istVerletzt(nr, tagIso("di"));
@@ -905,7 +905,7 @@ function renderWeek(){
       n2.textContent = gruende.join(" · ");
     }else{
       n2.className = "n2";
-      n2.textContent = first;
+      n2.textContent = "";
     }
     nm.appendChild(n2);
 
@@ -966,7 +966,7 @@ function openGrundSheet(nr){
   const h = document.createElement("div");
   h.className = "sheet-h";
   const t = document.createElement("h3");
-  t.textContent = p[2].split(" ")[0] + " " + p[1] + " · KW " + kwOf(monday);
+  t.textContent = p[2].split(" ")[0] + " · KW " + kwOf(monday);
   const x = document.createElement("button");
   x.className = "x";
   x.textContent = "✕";
@@ -1404,7 +1404,7 @@ function renderPraesenz(){
     kit.className = "kit"; kit.textContent = r.nr;
     const nm = document.createElement("span");
     nm.className = "n1";
-    nm.textContent = r.first.split(" ")[0] + " " + r.last;
+    nm.textContent = r.first.split(" ")[0];
     w.append(kit, nm);
     td1.appendChild(w);
 
@@ -1444,7 +1444,7 @@ function praesenzText(){
   KADER.slice()
     .map(([nr,last,first])=>{
       const s = stat[nr];
-      return {nr, name: first.split(" ")[0] + " " + last, s,
+      return {nr, name: first.split(" ")[0], s,
               q: s.moeglich ? s.da/s.moeglich : null};
     })
     .sort((a,b)=> (a.q == null ? 2 : a.q) - (b.q == null ? 2 : b.q) || a.nr - b.nr)
@@ -1472,7 +1472,7 @@ function renderPlayerList(){
     nm.className = "nm";
     const n1 = document.createElement("span");
     n1.className = "n1";
-    n1.textContent = first.split(" ")[0] + " " + last;
+    n1.textContent = first.split(" ")[0];
     const n2 = document.createElement("span");
     n2.className = "n2";
     const p = profil(nr);
@@ -1482,7 +1482,7 @@ function renderPlayerList(){
       n2.className = "n2 why";
       n2.textContent = "Abgemeldet" + (v.grund ? " — " + v.grund : "");
     }else{
-      n2.textContent = [p.pos, p.fuss].filter(Boolean).join(" · ") || first;
+      n2.textContent = [p.pos, p.fuss].filter(Boolean).join(" · ");
     }
     nm.append(n1, n2);
 
@@ -1506,8 +1506,8 @@ function openPlayerDetail(nr){
   if(!e) return;
   openPlayer = nr;
 
-  document.getElementById("spl-name").textContent = e[2].split(" ")[0] + " " + e[1];
-  document.getElementById("spl-nr").textContent   = "Nr. " + nr + " · " + e[2];
+  document.getElementById("spl-name").textContent = e[2].split(" ")[0];
+  document.getElementById("spl-nr").textContent   = "Nr. " + nr;
 
   const p = profil(nr);
   document.getElementById("p-pos").value   = p.pos;
