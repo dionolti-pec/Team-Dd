@@ -27,6 +27,7 @@
     --grey:#8B9099;
     --pitch:#9A9C98;
     --tap:44px;
+    --barh:48px;
     --pad:clamp(12px,4vw,20px);
     --gap:clamp(4px,1.4vw,7px);
   }
@@ -96,21 +97,32 @@
   }
   .sub b{font-weight:600;color:var(--ink)}
 
-  /* ---------- Reiter ---------- */
-  .tabs{
-    display:flex;overflow-x:auto;scrollbar-width:none;
+  /* ---------- Menüleiste ---------- */
+  .topbar{
     position:sticky;top:0;z-index:20;
     background:var(--paper);border-bottom:1px solid var(--rule2);
+    display:flex;align-items:stretch;
   }
-  .tabs::-webkit-scrollbar{display:none}
-  .tabs button{
-    flex:1 0 auto;background:none;border:0;
-    border-bottom:3px solid transparent;margin-bottom:-1px;
-    color:var(--muted);font-size:12px;font-weight:600;
-    letter-spacing:.04em;text-transform:uppercase;
-    padding:12px 14px;cursor:pointer;font-family:inherit;white-space:nowrap;
+  .menubtn{
+    flex:1;display:flex;align-items:center;gap:10px;min-width:0;
+    background:none;border:0;color:var(--ink);cursor:pointer;
+    font-family:inherit;padding:0 var(--pad);height:var(--barh);text-align:left;
   }
-  .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--red)}
+  .menubtn:active{background:var(--sunk)}
+  .menubtn .bars{
+    flex:none;width:17px;height:12px;position:relative;
+  }
+  .menubtn .bars i{
+    position:absolute;left:0;right:0;height:2px;background:var(--ink);
+  }
+  .menubtn .bars i:nth-child(1){top:0}
+  .menubtn .bars i:nth-child(2){top:5px}
+  .menubtn .bars i:nth-child(3){top:10px}
+  .menubtn .lab{
+    font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .menubtn .dn{margin-left:auto;color:var(--muted);font-size:11px;flex:none}
 
   /* ---------- Abschnitte ---------- */
   .sec{border-bottom:1px solid var(--rule)}
@@ -151,7 +163,7 @@
   }
   .colhead{
     padding:9px 0 8px;border-bottom:1px solid var(--rule2);
-    position:sticky;top:42px;background:var(--paper);z-index:10;
+    position:sticky;top:var(--barh);background:var(--paper);z-index:10;
   }
   .colhead .ch{text-align:center}
   .colhead .d{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
@@ -289,7 +301,7 @@
   .dhead{
     display:flex;align-items:center;gap:11px;
     padding:11px var(--pad);border-bottom:2px solid var(--ink);
-    position:sticky;top:42px;background:var(--paper);z-index:10;
+    position:sticky;top:var(--barh);background:var(--paper);z-index:10;
   }
   .dhead .t{min-width:0;flex:1}
   .dhead .t .a{font-size:17px;font-weight:700;
@@ -391,12 +403,12 @@
     <p class="sub"><span>Trainer <b>Dion Ramadani</b></span><span>Training <b>Di / Do</b></span></p>
   </header>
 
-  <div class="tabs" role="tablist">
-    <button role="tab" id="tab-anw" aria-selected="true">Woche</button>
-    <button role="tab" id="tab-auf" aria-selected="false">Aufstellung</button>
-    <button role="tab" id="tab-pre" aria-selected="false">Präsenz</button>
-    <button role="tab" id="tab-spl" aria-selected="false">Spieler</button>
-    <button role="tab" id="tab-ana" aria-selected="false">Analyse</button>
+  <div class="topbar">
+    <button class="menubtn" id="menubtn" aria-haspopup="menu" aria-expanded="false">
+      <span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="lab" id="menulab">Woche</span>
+      <span class="dn" aria-hidden="true">▾</span>
+    </button>
   </div>
 
   <!-- ================= Woche ================= -->
@@ -505,7 +517,11 @@
 
   <!-- ================= Spieler ================= -->
   <section id="view-spl" hidden>
-    <div id="spl-list"><ul id="playerlist"></ul></div>
+    <div id="spl-list">
+      <div class="sec-h"><h2>Kader</h2><span id="kader-cnt">–</span></div>
+      <ul id="playerlist"></ul>
+      <div class="bar"><button class="btn solid wide" id="spl-add">Spieler hinzufügen</button></div>
+    </div>
 
     <div id="spl-detail" hidden>
       <div class="dhead">
@@ -592,6 +608,10 @@
 
       <div class="sec-h"><h2>Logbuch</h2></div>
       <div id="p-logs"></div>
+
+      <div class="bar" style="border-top:1px solid var(--rule);margin-top:8px">
+        <button class="btn red" id="p-remove">Spieler aus Kader entfernen</button>
+      </div>
     </div>
   </section>
 
@@ -687,7 +707,7 @@
 <script>
 "use strict";
 
-const KADER = [
+const KADER_STD = [
   [1,"Abede","Raee"],
   [2,"Aikens","Leonidas Patrick"],
   [3,"Beluli","Arbes"],
@@ -711,12 +731,17 @@ const KADER = [
   [22,"Theuner","Titus"]
 ];
 
+/* Kader liegt im Speicher und ist über den Spieler-Reiter änderbar. */
+let KADER = KADER_STD.slice();
+
 const DAYS      = ["di","do","ma"];
 const DAY_LABEL = {di:"Dienstag", do:"Donnerstag", ma:"Match"};
 const DAY_OFF   = {di:1, do:3, ma:5};
 
 /* Formationen: Reihen von der Abwehr zum Sturm. */
 const FORMATIONEN = [
+  {id:"9-3-4-1",   label:"9er · 3-4-1",   rows:[
+    {n:3,name:"Abwehr"},{n:4,name:"Mittelfeld",wide:true},{n:1,name:"Sturm"}]},
   {id:"9-3-2-2-1", label:"9er · 3-2-2-1", rows:[
     {n:3,name:"Abwehr"},{n:2,name:"Mittelfeld"},{n:2,name:"Flügel",wide:true},{n:1,name:"Sturm"}]},
   {id:"9-3-3-2",   label:"9er · 3-3-2",   rows:[
@@ -734,7 +759,8 @@ const FORMATIONEN = [
   {id:"11-4-3-3",  label:"11er · 4-3-3",  rows:[
     {n:4,name:"Abwehr"},{n:3,name:"Mittelfeld"},{n:3,name:"Sturm"}]}
 ];
-const STD_FORM = "9-3-2-2-1";
+const STD_FORM = "9-3-4-1";
+const ALT_FORM = "9-3-2-2-1";   /* früherer Standard */
 
 let monday = mondayOf(new Date());
 let week   = blankWeek();
@@ -788,6 +814,18 @@ function setStatus(t){
   if(el) el.textContent = t + " · " + new Date().toLocaleTimeString("de-CH",{hour:"2-digit",minute:"2-digit"});
 }
 
+/* ---------- Kader ---------- */
+function ladeKader(){
+  const stored = readJSON("td:kader", null);
+  KADER = (Array.isArray(stored) && stored.length ? stored : KADER_STD.slice())
+    .filter(p=> Array.isArray(p) && p.length === 3)
+    .sort((a,b)=> a[0] - b[0]);
+}
+function speichereKader(){
+  KADER.sort((a,b)=> a[0] - b[0]);
+  writeJSON("td:kader", KADER);
+}
+
 function loadWeek(){
   const blank  = blankWeek();
   const stored = readJSON(weekKey(), null);
@@ -806,6 +844,11 @@ function loadWeek(){
         delete week.att[nr+"-ma"];
         if(warDabei) week.att[nr+"-ma"] = "ja";
       });
+      saveWeek();
+    }
+    /* Alter Standard 3-2-2-1 und noch nichts aufgestellt → neuer Standard 3-4-1 */
+    if(week.auf.form === ALT_FORM && !Object.keys(week.auf.slots).length){
+      week.auf.form = STD_FORM;
       saveWeek();
     }
   }else{
@@ -1071,7 +1114,7 @@ function slotPlan(){
   const plan = [{i:0, pos:"Torhüter", x:50, y:93}];
   let i = 1;
   f.rows.forEach((row, r)=>{
-    const y = R > 1 ? 78 - r * (58 / (R - 1)) : 50;
+    const y = R > 1 ? 76 - r * (60 / (R - 1)) : 46;
     for(let k=0;k<row.n;k++){
       let x;
       if(row.wide && row.n > 1) x = 13 + k * (74 / (row.n - 1));
@@ -1460,6 +1503,8 @@ function praesenzText(){
 function renderPlayerList(){
   const ul = document.getElementById("playerlist");
   ul.textContent = "";
+  document.getElementById("kader-cnt").textContent =
+    KADER.length + (KADER.length === 1 ? " Spieler" : " Spieler");
   KADER.forEach(([nr,last,first])=>{
     const li = document.createElement("li");
     const b  = document.createElement("button");
@@ -1705,22 +1750,178 @@ function buildAnalyseText(){
   return l.join("\n");
 }
 
-/* ---------- Reiter ---------- */
-const VIEWS = {
-  "tab-anw":"view-anw", "tab-auf":"view-auf",
-  "tab-pre":"view-pre", "tab-spl":"view-spl", "tab-ana":"view-ana"
-};
+/* ---------- Menü ---------- */
+const VIEWS = [
+  {id:"anw", view:"view-anw", label:"Woche",       hint:"Anwesenheit & Spieltag"},
+  {id:"auf", view:"view-auf", label:"Aufstellung", hint:"Formation & A4-Druck"},
+  {id:"pre", view:"view-pre", label:"Präsenz",     hint:"Trainingsquote"},
+  {id:"spl", view:"view-spl", label:"Spieler",     hint:"Kader, Profile, Logbuch"},
+  {id:"ana", view:"view-ana", label:"Analyse",     hint:"Spielanalysen"}
+];
+let aktuelleView = "anw";
+
 function showTab(id){
-  Object.keys(VIEWS).forEach(t=>{
-    const on = t === id;
-    document.getElementById(t).setAttribute("aria-selected", on ? "true" : "false");
-    document.getElementById(VIEWS[t]).hidden = !on;
-  });
-  if(id === "tab-auf") renderAufstellung();
-  if(id === "tab-pre") renderPraesenz();
-  if(id === "tab-spl") renderPlayerList();
-  if(id === "tab-ana") renderAnalyseList();
+  aktuelleView = id;
+  VIEWS.forEach(v=>{ document.getElementById(v.view).hidden = v.id !== id; });
+  const cur = VIEWS.find(v=> v.id === id);
+  document.getElementById("menulab").textContent = cur ? cur.label : "Menü";
+  if(id === "auf") renderAufstellung();
+  if(id === "pre") renderPraesenz();
+  if(id === "spl") renderPlayerList();
+  if(id === "ana") renderAnalyseList();
   window.scrollTo(0,0);
+}
+
+function openMenu(){
+  closeSheet();
+  const veil = document.createElement("div");
+  veil.className = "veil";
+  veil.onclick = (e)=>{ if(e.target === veil) closeSheet(); };
+
+  const sheet = document.createElement("div");
+  sheet.className = "sheet";
+
+  const h = document.createElement("div");
+  h.className = "sheet-h";
+  const t = document.createElement("h3");
+  t.textContent = "Bereich wählen";
+  const x = document.createElement("button");
+  x.className = "x"; x.textContent = "✕"; x.onclick = closeSheet;
+  h.append(t, x);
+  sheet.appendChild(h);
+
+  VIEWS.forEach(v=>{
+    const b = document.createElement("button");
+    b.className = "opt" + (v.id === aktuelleView ? " on" : "");
+    const nm = document.createElement("span");
+    nm.textContent = v.label;
+    const tg = document.createElement("span");
+    tg.className = "tag";
+    tg.textContent = v.hint;
+    b.append(nm, tg);
+    b.onclick = ()=>{ closeSheet(); showTab(v.id); };
+    sheet.appendChild(b);
+  });
+
+  veil.appendChild(sheet);
+  document.body.appendChild(veil);
+}
+
+/* ---------- Spieler hinzufügen / entfernen ---------- */
+function openAddSheet(){
+  closeSheet();
+  const veil = document.createElement("div");
+  veil.className = "veil";
+  veil.onclick = (e)=>{ if(e.target === veil) closeSheet(); };
+
+  const sheet = document.createElement("div");
+  sheet.className = "sheet";
+
+  const h = document.createElement("div");
+  h.className = "sheet-h";
+  const t = document.createElement("h3");
+  t.textContent = "Spieler hinzufügen";
+  const x = document.createElement("button");
+  x.className = "x"; x.textContent = "✕"; x.onclick = closeSheet;
+  h.append(t, x);
+  sheet.appendChild(h);
+
+  const box = document.createElement("div");
+  box.className = "fields";
+  const mk = (id, label, ph, type)=>{
+    const f = document.createElement("div");
+    f.className = "field";
+    const l = document.createElement("label");
+    l.setAttribute("for", id);
+    l.textContent = label;
+    const i = document.createElement("input");
+    i.id = id; i.type = type || "text"; i.placeholder = ph; i.autocomplete = "off";
+    if(type === "number"){ i.inputMode = "numeric"; i.min = "1"; i.max = "99"; }
+    f.append(l, i);
+    box.appendChild(f);
+    return i;
+  };
+  const iNr   = mk("add-nr",   "Trikotnummer", "z.B. 23", "number");
+  const iVor  = mk("add-vor",  "Vorname",      "z.B. Luca");
+  const iNach = mk("add-nach", "Nachname",     "z.B. Bianchi");
+  sheet.appendChild(box);
+
+  const msg = document.createElement("p");
+  msg.className = "hint";
+  msg.style.color = "var(--red)";
+  sheet.appendChild(msg);
+
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  const ok = document.createElement("button");
+  ok.className = "btn solid wide";
+  ok.textContent = "Hinzufügen";
+  ok.onclick = ()=>{
+    const nr   = parseInt(iNr.value, 10);
+    const vor  = iVor.value.trim();
+    const nach = iNach.value.trim();
+    if(!nr || nr < 1 || nr > 99){ msg.textContent = "Trikotnummer zwischen 1 und 99 eingeben."; return; }
+    if(KADER.some(p=> p[0] === nr)){ msg.textContent = "Nummer " + nr + " ist schon vergeben."; return; }
+    if(!vor){ msg.textContent = "Vorname fehlt."; return; }
+    KADER.push([nr, nach || vor, vor]);
+    speichereKader();
+    closeSheet();
+    renderPlayerList();
+    renderWeek();
+    renderAufstellung();
+  };
+  bar.appendChild(ok);
+  sheet.appendChild(bar);
+
+  veil.appendChild(sheet);
+  document.body.appendChild(veil);
+  iNr.focus();
+}
+
+function entferneSpieler(nr){
+  const p = spieler(nr);
+  if(!p) return;
+  if(!confirm("„" + p[2].split(" ")[0] + "“ (Nr. " + nr + ") aus dem Kader entfernen?\n\n" +
+              "Profil, Logbuch und alle Einträge dieses Spielers werden gelöscht. " +
+              "Das lässt sich nicht rückgängig machen.")) return;
+
+  KADER = KADER.filter(x=> x[0] !== nr);
+  speichereKader();
+
+  try{
+    localStorage.removeItem(profilKey(nr));
+    localStorage.removeItem(logKey(nr));
+  }catch(e){}
+
+  /* Spieler aus allen gespeicherten Wochen putzen */
+  const keys = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.indexOf("td:week:") === 0) keys.push(k);
+  }
+  keys.forEach(k=>{
+    const w = readJSON(k, null);
+    if(!w) return;
+    let dirty = false;
+    DAYS.forEach(d=>{
+      if(w.att   && w.att[nr+"-"+d]   != null){ delete w.att[nr+"-"+d];   dirty = true; }
+      if(w.grund && w.grund[nr+"-"+d] != null){ delete w.grund[nr+"-"+d]; dirty = true; }
+    });
+    if(w.auf && w.auf.slots){
+      Object.keys(w.auf.slots).forEach(s=>{
+        if(w.auf.slots[s] === nr){ delete w.auf.slots[s]; dirty = true; }
+      });
+    }
+    if(dirty){ try{ localStorage.setItem(k, JSON.stringify(w)); }catch(e){} }
+  });
+
+  /* laufende Woche neu einlesen */
+  openPlayer = null;
+  document.getElementById("spl-detail").hidden = true;
+  document.getElementById("spl-list").hidden   = false;
+  loadWeek();
+  renderPlayerList();
+  setStatus("Spieler entfernt");
 }
 
 /* ---------- Verdrahtung ---------- */
@@ -1743,7 +1944,7 @@ document.getElementById("reset").onclick = ()=>{
   };
 });
 
-Object.keys(VIEWS).forEach(t=>{ document.getElementById(t).onclick = ()=> showTab(t); });
+document.getElementById("menubtn").onclick = openMenu;
 
 document.getElementById("f-form").onchange = (e)=>{
   week.auf.form  = e.target.value;
@@ -1780,6 +1981,8 @@ document.getElementById("p-notiz").oninput  = saveProfile;
 document.getElementById("p-vsave").onclick  = saveVerletzung;
 document.getElementById("p-vclear").onclick = clearVerletzung;
 document.getElementById("p-logadd").onclick = addLog;
+document.getElementById("p-remove").onclick = ()=> entferneSpieler(openPlayer);
+document.getElementById("spl-add").onclick  = openAddSheet;
 
 document.getElementById("ana-new").onclick = ()=>{
   const list = allAnalysen();
@@ -1815,7 +2018,9 @@ document.getElementById("a-del").onclick = ()=>{
 
 document.addEventListener("keydown", e=>{ if(e.key === "Escape") closeSheet(); });
 
+ladeKader();
 loadWeek();
+showTab("anw");
 setStatus("Bereit");
 </script>
 </body>
