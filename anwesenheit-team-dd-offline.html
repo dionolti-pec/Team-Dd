@@ -393,73 +393,80 @@
   [hidden]{display:none!important}
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-  /* =================== A4-Druck =================== */
-  #sheetA4,#sheetPlan{display:none}
-  @page{size:A4 portrait;margin:13mm}
+  /* =================== A4-Bögen ===================
+     Stile stehen ausserhalb von @media print, damit die Bögen vor dem
+     Druck gemessen und auf genau eine Seite skaliert werden können. */
+  #sheetA4,#sheetPlan{display:none;color:#000;background:#fff;
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    break-inside:avoid;break-after:avoid;page-break-after:avoid}
+  .a4-fit{overflow:hidden}
+  .a4-inner{transform-origin:top left}
+
+  .a4-h{display:flex;align-items:flex-end;gap:5mm;border-bottom:1.6pt solid #000;padding-bottom:2.5mm}
+  .a4-h .l{flex:1}
+  .a4-club{font-size:7.5pt;letter-spacing:.16em;text-transform:uppercase;color:#555;margin:0 0 1mm}
+  .a4-t{font-size:22pt;font-weight:700;font-stretch:condensed;text-transform:uppercase;
+    letter-spacing:-.02em;line-height:.9;margin:0}
+  .a4-r{text-align:right;font-size:8pt;color:#555;line-height:1.5}
+  .a4-r b{display:block;font-size:13pt;color:#000;font-weight:700}
+
+  .a4-info{width:100%;border-collapse:collapse;margin:4mm 0 4mm}
+  .a4-info td{border-bottom:.5pt solid #bbb;padding:1.8mm 0;vertical-align:baseline}
+  .a4-info .k{font-size:7pt;letter-spacing:.12em;text-transform:uppercase;color:#666;
+    width:26mm;white-space:nowrap}
+  .a4-info .v{font-size:10.5pt;font-weight:600;padding-right:6mm}
+
+  .a4-pitch{position:relative;width:112mm;margin:0 auto 4mm}
+  .a4-pitch svg{display:block;width:100%;height:auto}
+  .a4-toks{position:absolute;inset:0}
+  .a4-tok{position:absolute;transform:translate(-50%,-50%);text-align:center;width:26mm}
+  .a4-tok .sq{
+    width:7mm;height:7mm;margin:0 auto .6mm;
+    display:flex;align-items:center;justify-content:center;
+    background:#000;color:#fff;font-size:8.5pt;font-weight:700;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .a4-tok .sq.free{background:#fff;color:#bbb;border:.5pt dashed #bbb}
+  .a4-tok .lb{font-size:8pt;font-weight:700;line-height:1.15}
+  .a4-tok .lb.free{font-weight:400;color:#999}
+  .a4-tok .ps{font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#777}
+
+  .a4-cols{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:1mm}
+  .a4-cols h3{
+    font-size:7.5pt;letter-spacing:.14em;text-transform:uppercase;color:#555;
+    margin:0 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm;
+  }
+  .a4-cols p{font-size:9.5pt;margin:0;line-height:1.65}
+  .a4-cols .none{color:#999}
+  .a4-foot{margin-top:5mm;border-top:.5pt solid #ccc;padding-top:1.8mm;
+    font-size:7.5pt;color:#666;display:flex;justify-content:space-between}
+
+  /* Spielplan-Bogen */
+  .pl-tab{width:100%;border-collapse:collapse;margin-top:4mm}
+  .pl-tab th{
+    font-size:7pt;letter-spacing:.12em;text-transform:uppercase;color:#666;
+    text-align:left;border-bottom:1pt solid #000;padding:0 2mm 1.5mm 0;font-weight:600;
+  }
+  .pl-tab td{
+    font-size:9.5pt;padding:2.1mm 2mm 2.1mm 0;border-bottom:.5pt solid #ccc;
+    vertical-align:baseline;
+  }
+  .pl-tab .c-dat{width:26mm;white-space:nowrap;font-weight:600}
+  .pl-tab .c-ha{width:16mm}
+  .pl-tab .c-zeit,.pl-tab .c-bes{width:17mm;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .pl-tab .c-bes{font-weight:700}
+  .pl-tab .c-ort{color:#555;font-size:8.5pt}
+  .pl-tab .c-snr{color:#888;font-size:7.5pt}
+  .pl-tab tr.past td{color:#999}
+  .pl-note{margin-top:4mm;font-size:8pt;color:#666;line-height:1.6}
+
+  @page{size:A4 portrait;margin:12mm}
   @media print{
     html,body{background:#fff;color:#000}
     body{padding:0}
     .wrap{display:none!important}
-    #sheetA4,#sheetPlan{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#000}
     body[data-print="auf"]  #sheetA4{display:block}
     body[data-print="plan"] #sheetPlan{display:block}
-
-    .a4-h{display:flex;align-items:flex-end;gap:5mm;border-bottom:1.6pt solid #000;padding-bottom:2.5mm}
-    .a4-h .l{flex:1}
-    .a4-club{font-size:7.5pt;letter-spacing:.16em;text-transform:uppercase;color:#555;margin:0 0 1mm}
-    .a4-t{font-size:22pt;font-weight:700;font-stretch:condensed;text-transform:uppercase;
-      letter-spacing:-.02em;line-height:.9;margin:0}
-    .a4-r{text-align:right;font-size:8pt;color:#555;line-height:1.5}
-    .a4-r b{display:block;font-size:13pt;color:#000;font-weight:700}
-
-    .a4-info{width:100%;border-collapse:collapse;margin:4mm 0 4mm}
-    .a4-info td{border-bottom:.5pt solid #bbb;padding:1.8mm 0;vertical-align:baseline}
-    .a4-info .k{font-size:7pt;letter-spacing:.12em;text-transform:uppercase;color:#666;
-      width:26mm;white-space:nowrap}
-    .a4-info .v{font-size:10.5pt;font-weight:600;padding-right:6mm}
-
-    .a4-pitch{position:relative;width:112mm;margin:0 auto 4mm}
-    .a4-pitch svg{display:block;width:100%;height:auto}
-    .a4-toks{position:absolute;inset:0}
-    .a4-tok{position:absolute;transform:translate(-50%,-50%);text-align:center;width:26mm}
-    .a4-tok .sq{
-      width:7mm;height:7mm;margin:0 auto .6mm;
-      display:flex;align-items:center;justify-content:center;
-      background:#000;color:#fff;font-size:8.5pt;font-weight:700;
-      -webkit-print-color-adjust:exact;print-color-adjust:exact;
-    }
-    .a4-tok .sq.free{background:#fff;color:#bbb;border:.5pt dashed #bbb}
-    .a4-tok .lb{font-size:8pt;font-weight:700;line-height:1.15}
-    .a4-tok .lb.free{font-weight:400;color:#999}
-    .a4-tok .ps{font-size:6pt;letter-spacing:.08em;text-transform:uppercase;color:#777}
-
-    .a4-cols{display:grid;grid-template-columns:1fr 1fr;gap:6mm;margin-top:1mm}
-    .a4-cols h3{
-      font-size:7.5pt;letter-spacing:.14em;text-transform:uppercase;color:#555;
-      margin:0 0 1.5mm;border-bottom:.5pt solid #999;padding-bottom:1mm;
-    }
-    .a4-cols p{font-size:9.5pt;margin:0;line-height:1.65}
-    .a4-cols .none{color:#999}
-    .a4-foot{margin-top:5mm;border-top:.5pt solid #ccc;padding-top:1.8mm;
-      font-size:7.5pt;color:#666;display:flex;justify-content:space-between}
-
-    /* Spielplan-Bogen */
-    .pl-tab{width:100%;border-collapse:collapse;margin-top:4mm}
-    .pl-tab th{
-      font-size:7pt;letter-spacing:.12em;text-transform:uppercase;color:#666;
-      text-align:left;border-bottom:1pt solid #000;padding:0 2mm 1.5mm 0;font-weight:600;
-    }
-    .pl-tab td{
-      font-size:9.5pt;padding:2.1mm 2mm 2.1mm 0;border-bottom:.5pt solid #ccc;
-      vertical-align:baseline;
-    }
-    .pl-tab .c-dat{width:26mm;white-space:nowrap;font-weight:600}
-    .pl-tab .c-ha{width:16mm}
-    .pl-tab .c-zeit,.pl-tab .c-bes{width:17mm;white-space:nowrap;font-variant-numeric:tabular-nums}
-    .pl-tab .c-bes{font-weight:700}
-    .pl-tab .c-ort{color:#555;font-size:8.5pt}
-    .pl-tab tr.past td{color:#999}
-    .pl-note{margin-top:4mm;font-size:8pt;color:#666;line-height:1.6}
   }
 </style>
 </head>
@@ -768,7 +775,7 @@
 </div>
 
 <!-- ================= A4 ================= -->
-<div id="sheetA4">
+<div id="sheetA4"><div class="a4-fit"><div class="a4-inner">
   <div class="a4-h">
     <div class="l">
       <p class="a4-club">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
@@ -789,10 +796,10 @@
     </div>
   </div>
   <p class="a4-foot"><span id="a4-f1">–</span><span>Trainer Dion Ramadani</span></p>
-</div>
+</div></div></div>
 
 <!-- ================= A4 Spielplan ================= -->
-<div id="sheetPlan">
+<div id="sheetPlan"><div class="a4-fit"><div class="a4-inner">
   <div class="a4-h">
     <div class="l">
       <p class="a4-club">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
@@ -814,7 +821,7 @@
   </table>
   <p class="pl-note" id="pl-note">–</p>
   <p class="a4-foot"><span id="pl-f1">–</span><span>Trainer Dion Ramadani</span></p>
-</div>
+</div></div></div>
 
 <script>
 "use strict";
@@ -1476,8 +1483,24 @@ function escapeHtml(s){
 const VORLAUF = {heim:60, auswaerts:45};
 const WOTAG = ["So","Mo","Di","Mi","Do","Fr","Sa"];
 
+/* Meisterschaft Herbst 2026, aus dem IFV Match Center. */
+const SPIELPLAN_STD = [
+  {datum:"2026-09-05", zeit:"15:30", heim:false, gegner:"FC Muotathal",       snr:"167841"},
+  {datum:"2026-09-19", zeit:"15:30", heim:true,  gegner:"FC Baar D9 schwarz", snr:"167855"},
+  {datum:"2026-09-26", zeit:"15:45", heim:false, gegner:"FC Aegeri D9-b",     snr:"167856"},
+  {datum:"2026-10-10", zeit:"12:00", heim:true,  gegner:"SC Cham d",          snr:"167868"},
+  {datum:"2026-10-17", zeit:"13:00", heim:false, gegner:"FC Schattdorf c",    snr:"167872"},
+  {datum:"2026-10-24", zeit:"13:30", heim:true,  gegner:"FC Hünenberg b",     snr:"167881"}
+];
+
 function spielplan(){
-  return readJSON("td:spielplan", []).slice()
+  let l = readJSON("td:spielplan", null);
+  if(l === null){
+    l = SPIELPLAN_STD.map(g=> Object.assign(
+      {id:neueId(), ort:"", besammlung:"", ergebnis:""}, g));
+    writeJSON("td:spielplan", l);
+  }
+  return l.slice()
     .sort((a,b)=> (a.datum||"").localeCompare(b.datum||"") ||
                   (a.zeit||"").localeCompare(b.zeit||""));
 }
@@ -1543,7 +1566,8 @@ function renderSpielplan(){
     opp.append(ha, document.createTextNode(" " + (g.gegner || "Gegner offen")));
     const det = document.createElement("span");
     det.className = "det";
-    det.textContent = [g.ort, g.ergebnis].filter(Boolean).join(" · ") || "—";
+    det.textContent = [g.ort, g.ergebnis, g.snr ? "Nr. " + g.snr : ""]
+      .filter(Boolean).join(" · ") || "—";
     mid.append(opp, det);
 
     const rt = document.createElement("span");
@@ -1625,6 +1649,7 @@ function openSpielSheet(id){
   const iOrt = mk("sp-ort",    "Spielort", "z.B. Sportanlage Herti, Zug", "text", g ? g.ort : "");
   const iBes = mk("sp-bes",    "Besammlung (leer = automatisch)", "", "text", g ? (g.besammlung||"") : "");
   const iErg = mk("sp-erg",    "Resultat (optional)", "z.B. 3:2", "text", g ? (g.ergebnis||"") : "");
+  const iSnr = mk("sp-snr",    "Spielnummer (optional)", "z.B. 167841", "text", g ? (g.snr||"") : "");
 
   const auto = document.createElement("p");
   auto.className = "hint";
@@ -1660,7 +1685,8 @@ function openSpielSheet(id){
       zeit:   iZeit.value.trim(),
       ort:    iOrt.value.trim(),
       besammlung: iBes.value.trim(),
-      ergebnis:   iErg.value.trim()
+      ergebnis:   iErg.value.trim(),
+      snr:        iSnr.value.trim()
     };
     const l = spielplan();
     if(g) Object.assign(l.find(x=> x.id === g.id), daten);
@@ -1691,6 +1717,55 @@ function openSpielSheet(id){
 }
 
 function neueId(){ return Date.now() + "-" + Math.random().toString(36).slice(2,8); }
+
+/* ---------- A4: auf genau eine Seite skalieren ----------
+   Der Bogen wird versteckt in A4-Breite gemessen; passt er nicht in die
+   Seitenhöhe, wird der Inhalt so weit verkleinert, bis er hineinpasst. */
+const A4_B = 186, A4_H = 268;   /* Satzspiegel in mm bei 12 mm Rand, 3 mm Reserve */
+
+function mmInPx(v){
+  const d = document.createElement("div");
+  d.style.cssText = "position:absolute;visibility:hidden;height:" + v + "mm";
+  document.body.appendChild(d);
+  const px = d.getBoundingClientRect().height;
+  d.remove();
+  return px;
+}
+
+function fitSheet(id){
+  const sheet = document.getElementById(id);
+  if(!sheet) return;
+  const fit   = sheet.querySelector(".a4-fit");
+  const inner = sheet.querySelector(".a4-inner");
+  if(!fit || !inner) return;
+
+  inner.style.width = "100%";
+  inner.style.transform = "none";
+
+  const gemerkt = sheet.getAttribute("style") || "";
+  sheet.setAttribute("style",
+    "display:block;position:absolute;left:-10000px;top:0;width:" + A4_B + "mm");
+  fit.style.height = "auto";
+
+  const platz = mmInPx(A4_H);
+  let k = 1;
+  for(let i = 0; i < 4; i++){
+    const hoch = inner.scrollHeight * k;
+    if(hoch <= platz + 1) break;
+    k = Math.max(0.4, k * (platz / hoch));
+    inner.style.width = (100 / k) + "%";
+    inner.style.transform = "scale(" + k + ")";
+  }
+
+  sheet.setAttribute("style", gemerkt);
+  fit.style.height = A4_H + "mm";
+}
+
+function drucke(modus, id){
+  document.body.dataset.print = modus;
+  fitSheet(id);
+  window.print();
+}
 
 /* Aus dem Match Center kopierte Zeilen einlesen.
    Spalten sind dort durch Tabulatoren oder mehrere Leerzeichen getrennt. */
@@ -1754,9 +1829,10 @@ function parsePlan(text){
       if(istUns(gegner)) gegner = "";
     }
 
+    const snrM = /Spielnummer\s*(\d{4,})/i.exec(zeile);
     if(!gegner && !zeit) return;
     treffer.push({id:neueId(), datum, zeit, heim, gegner, ort:ort.trim(),
-                  besammlung:"", ergebnis:""});
+                  besammlung:"", ergebnis:"", snr: snrM ? snrM[1] : ""});
   });
   return treffer;
 }
@@ -1852,6 +1928,7 @@ function planText(){
     if(g.zeit) zeile2.push("Anpfiff " + g.zeit);
     if(bes)    zeile2.push("Besammlung " + bes);
     if(g.ort)  zeile2.push(g.ort);
+    if(g.snr)  zeile2.push("Nr. " + g.snr);
     if(zeile2.length) l.push("   " + zeile2.join(" · "));
   });
   l.push("", "Besammlung: Heim 1 Std., auswärts 45 Min. vor Anpfiff.");
@@ -1893,6 +1970,12 @@ function renderPlanA4(){
       r.className = "c-ort";
       r.textContent = "Resultat " + g.ergebnis;
       c3.appendChild(r);
+    }
+    if(g.snr){
+      const n = document.createElement("div");
+      n.className = "c-snr";
+      n.textContent = "Spielnummer " + g.snr;
+      c3.appendChild(n);
     }
 
     const c4 = document.createElement("td");
@@ -2530,16 +2613,14 @@ document.getElementById("auf-clear").onclick = ()=>{
 };
 document.getElementById("auf-print").onclick = ()=>{
   renderA4();
-  document.body.dataset.print = "auf";
-  window.print();
+  drucke("auf", "sheetA4");
 };
 document.getElementById("plan-add").onclick   = ()=> openSpielSheet(null);
 document.getElementById("plan-paste").onclick = openPasteSheet;
 document.getElementById("plan-share").onclick = ()=> shareText(planText());
 document.getElementById("plan-print").onclick = ()=>{
   renderPlanA4();
-  document.body.dataset.print = "plan";
-  window.print();
+  drucke("plan", "sheetPlan");
 };
 
 document.getElementById("f-start").onchange = (e)=>{
