@@ -544,6 +544,20 @@
       </div>
     </div>
 
+    <div class="sec">
+      <div class="sec-h"><h2>Textvorlage</h2></div>
+      <div class="fields">
+        <div class="field" style="margin-top:0">
+          <label for="f-gruss">Anrede</label>
+          <input id="f-gruss" type="text" placeholder="Hallo Zusammen," autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-sign">Grussformel</label>
+          <input id="f-sign" type="text" placeholder="LG, Dion" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
     <div class="bar">
       <button class="btn solid" id="share">Aufgebot teilen</button>
       <button class="btn quiet" id="reset">Woche zurücksetzen</button>
@@ -913,6 +927,7 @@ function mondayOf(d){
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
 function fmt(d){ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0")+"."; }
 function fmtJ(d){ return fmt(d)+d.getFullYear(); }
+function fmtKurz(d){ return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0"); }
 function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
 function fromIso(s){
   const p = (s||"").split("-");
@@ -1059,6 +1074,9 @@ function renderWeek(){
   document.getElementById("f-treff").value  = week.spiel.treff;
   document.getElementById("f-ort").value    = week.spiel.ort;
   document.getElementById("f-maps").value   = week.spiel.maps || "";
+  const eTxt = einstellungen();
+  document.getElementById("f-gruss").value  = eTxt.gruss;
+  document.getElementById("f-sign").value   = eTxt.signatur;
 
   const list = document.getElementById("list");
   list.textContent = "";
@@ -1230,21 +1248,32 @@ function absenzen(){
 }
 
 function buildListText(){
-  const lines = ["Aufgebot:"];
-  aufgebot().forEach(nr=> lines.push(vorname(nr)));
-  lines.push("");
+  const e = einstellungen();
   const s = week.spiel;
+  const tag = fmtKurz(addDays(monday, DAY_OFF.ma));
+
+  const lines = [];
+  if(e.gruss) lines.push(e.gruss, "");
+  lines.push("Aufgebot für das Spiel" +
+             (s.gegner ? " gegen " + s.gegner : "") + " " + tag + ":", "");
+
+  aufgebot().forEach(nr=> lines.push(vorname(nr)));
+
+  lines.push("");
   lines.push("Besammlung:" + (s.treff ? " " + s.treff : ""));
   if(s.zeit)   lines.push("Spielzeit: " + s.zeit);
-  if(s.gegner) lines.push("Gegner: " + s.gegner);
   if(s.ort)    lines.push("Spielort: " + s.ort);
-  /* Karte zwei Zeilen unter dem Spielort */
+  if(s.gegner) lines.push("Gegner: " + s.gegner);
+  /* Karte zwei Zeilen nach dem Ortsblock */
   if(s.maps)   lines.push("", s.maps);
+
   const abs = absenzen();
   if(abs.length){
     lines.push("", "Absenzen:");
     abs.forEach(a=> lines.push(vorname(a.nr) + " — " + a.grund));
   }
+
+  if(e.signatur) lines.push("", e.signatur);
   return lines.join("\n");
 }
 
@@ -2067,8 +2096,9 @@ function renderPlanA4(){
 }
 
 /* ---------- Präsenz ---------- */
+const EINST_STD = {start:"2026-08-18", gruss:"Hallo Zusammen,", signatur:"LG, Dion"};
 function einstellungen(){
-  return readJSON("td:einstellungen", {start:"2026-08-18"});
+  return Object.assign({}, EINST_STD, readJSON("td:einstellungen", {}));
 }
 function setEinstellungen(o){ writeJSON("td:einstellungen", o); }
 
@@ -2761,6 +2791,13 @@ document.getElementById("f-start").onchange = (e)=>{
   renderPraesenz();
 };
 document.getElementById("f-sort").onchange = renderPraesenz;
+[["f-gruss","gruss"],["f-sign","signatur"]].forEach(([id,prop])=>{
+  document.getElementById(id).oninput = (ev)=>{
+    const o = einstellungen();
+    o[prop] = ev.target.value;
+    setEinstellungen(o);
+  };
+});
 document.getElementById("pre-share").onclick = ()=> shareText(praesenzText());
 
 document.getElementById("spl-back").onclick = ()=>{
