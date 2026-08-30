@@ -2,7 +2,10 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+const base = "/Team-Dd/";
+
 export default defineConfig({
+  base,
   plugins: [
     svelte(),
     VitePWA({
@@ -15,11 +18,12 @@ export default defineConfig({
         theme_color: "#4F46E5",
         background_color: "#f2f3f7",
         display: "standalone",
-        start_url: "/",
+        start_url: base,
+        scope: base,
         icons: [
-          { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-          { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-          { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
+          { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" },
+          { src: "icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
         ],
       },
       workbox: {
