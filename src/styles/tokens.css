@@ -1,0 +1,91 @@
+:root {
+  --bg: #f2f3f7;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --sunk: #eceef3;
+  --border: #e4e6ec;
+  --border-strong: #d6d9e1;
+
+  --text: #14161c;
+  --text-2: #5b6070;
+  --text-3: #8b90a0;
+
+  --primary: #4f46e5;
+  --primary-ink: #ffffff;
+  --primary-soft: #eeedfd;
+
+  --success: #16a34a;
+  --success-soft: #e7f7ec;
+  --danger: #dc2626;
+  --danger-soft: #fdeaea;
+  --hurt: #8b90a0;
+  --hurt-soft: #eceef3;
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(20, 22, 28, 0.04), 0 8px 24px rgba(20, 22, 28, 0.06);
+  --shadow-float: 0 4px 16px rgba(20, 22, 28, 0.14), 0 1px 3px rgba(20, 22, 28, 0.08);
+
+  --tap: 46px;
+  --pad: clamp(14px, 4.5vw, 22px);
+  --tabbar-h: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c0d11;
+    --surface: #16181f;
+    --surface-2: #1b1e26;
+    --sunk: #1f222b;
+    --border: #262932;
+    --border-strong: #333742;
+
+    --text: #f1f2f6;
+    --text-2: #a7abb8;
+    --text-3: #6f7383;
+
+    --primary: #8b85f5;
+    --primary-ink: #10101c;
+    --primary-soft: #23213f;
+
+    --success: #34d399;
+    --success-soft: #123527;
+    --danger: #f87171;
+    --danger-soft: #3a1c1e;
+    --hurt: #6f7383;
+    --hurt-soft: #21242d;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.45);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0c0d11;
+  --surface: #16181f;
+  --surface-2: #1b1e26;
+  --sunk: #1f222b;
+  --border: #262932;
+  --border-strong: #333742;
+
+  --text: #f1f2f6;
+  --text-2: #a7abb8;
+  --text-3: #6f7383;
+
+  --primary: #8b85f5;
+  --primary-ink: #10101c;
+  --primary-soft: #23213f;
+
+  --success: #34d399;
+  --success-soft: #123527;
+  --danger: #f87171;
+  --danger-soft: #3a1c1e;
+  --hurt: #6f7383;
+  --hurt-soft: #21242d;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.45);
+}
