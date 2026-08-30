@@ -322,6 +322,7 @@
   .game .rt > span{display:block}
   .game .rt .tm{font-size:15px;font-weight:700}
   .game .rt .bs{font-size:10.5px;color:var(--red);font-weight:600}
+  .game .rt .bs.res{font-size:13px;color:var(--ink2);font-weight:700}
   .seg{display:flex;border:1px solid var(--rule2)}
   .seg button{
     flex:1;background:var(--paper2);border:0;color:var(--ink2);
@@ -474,7 +475,7 @@
 <div class="wrap">
 
   <header>
-    <p class="club"><i>Zug 94</i> · D-Junioren · 3. Stärkeklasse</p>
+    <p class="club"><i>Zug 94</i> · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
     <h1>Team Dd</h1>
     <p class="sub"><span>Trainer <b>Dion Ramadani</b></span><span>Training <b>Di / Do</b></span></p>
   </header>
@@ -778,7 +779,7 @@
 <div id="sheetA4"><div class="a4-fit"><div class="a4-inner">
   <div class="a4-h">
     <div class="l">
-      <p class="a4-club">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
+      <p class="a4-club">Zug 94 · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
       <h1 class="a4-t">Team Dd — Aufstellung</h1>
     </div>
     <div class="a4-r" id="a4-right">–</div>
@@ -802,7 +803,7 @@
 <div id="sheetPlan"><div class="a4-fit"><div class="a4-inner">
   <div class="a4-h">
     <div class="l">
-      <p class="a4-club">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
+      <p class="a4-club">Zug 94 · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
       <h1 class="a4-t">Team Dd — Spielplan</h1>
     </div>
     <div class="a4-r" id="pl-right">–</div>
@@ -1483,8 +1484,11 @@ function escapeHtml(s){
 const VORLAUF = {heim:60, auswaerts:45};
 const WOTAG = ["So","Mo","Di","Mi","Do","Fr","Sa"];
 
-/* Meisterschaft Herbst 2026, aus dem IFV Match Center. */
+/* Meisterschaft Junioren D-9, Stärkeklasse 3, Herbstrunde, Gruppe 8.
+   Resultate aus Sicht von Zug 94 d. */
 const SPIELPLAN_STD = [
+  {datum:"2026-08-22", zeit:"13:00", heim:false, gegner:"FC Küssnacht a/R c", snr:"167826", ergebnis:"4:5"},
+  {datum:"2026-08-29", zeit:"10:00", heim:true,  gegner:"FC Walchwil D-9",    snr:"167828", ergebnis:"3:3"},
   {datum:"2026-09-05", zeit:"15:30", heim:false, gegner:"FC Muotathal",       snr:"167841"},
   {datum:"2026-09-19", zeit:"15:30", heim:true,  gegner:"FC Baar D9 schwarz", snr:"167855"},
   {datum:"2026-09-26", zeit:"15:45", heim:false, gegner:"FC Aegeri D9-b",     snr:"167856"},
@@ -1492,6 +1496,27 @@ const SPIELPLAN_STD = [
   {datum:"2026-10-17", zeit:"13:00", heim:false, gegner:"FC Schattdorf c",    snr:"167872"},
   {datum:"2026-10-24", zeit:"13:30", heim:true,  gegner:"FC Hünenberg b",     snr:"167881"}
 ];
+const SEED_STAND = 2;
+
+/* Neue Spiele aus SPIELPLAN_STD nachziehen, ohne eigene Einträge und
+   Änderungen zu überschreiben. Gelöschte Spiele bleiben gelöscht, weil
+   der Abgleich nur einmal pro Stand läuft. */
+function ergaenzeSeed(l){
+  const stand = readJSON("td:spielplan:stand", 0);
+  if(stand >= SEED_STAND) return l;
+  const kennt = new Set();
+  l.forEach(g=>{
+    if(g.snr) kennt.add("n" + g.snr);
+    kennt.add("d" + g.datum);
+  });
+  SPIELPLAN_STD.forEach(g=>{
+    if(kennt.has("n" + g.snr) || kennt.has("d" + g.datum)) return;
+    l.push(Object.assign({id:neueId(), ort:"", besammlung:"", ergebnis:""}, g));
+  });
+  writeJSON("td:spielplan", l);
+  writeJSON("td:spielplan:stand", SEED_STAND);
+  return l;
+}
 
 function spielplan(){
   let l = readJSON("td:spielplan", null);
@@ -1499,6 +1524,9 @@ function spielplan(){
     l = SPIELPLAN_STD.map(g=> Object.assign(
       {id:neueId(), ort:"", besammlung:"", ergebnis:""}, g));
     writeJSON("td:spielplan", l);
+    writeJSON("td:spielplan:stand", SEED_STAND);
+  }else{
+    l = ergaenzeSeed(l);
   }
   return l.slice()
     .sort((a,b)=> (a.datum||"").localeCompare(b.datum||"") ||
@@ -1566,7 +1594,7 @@ function renderSpielplan(){
     opp.append(ha, document.createTextNode(" " + (g.gegner || "Gegner offen")));
     const det = document.createElement("span");
     det.className = "det";
-    det.textContent = [g.ort, g.ergebnis, g.snr ? "Nr. " + g.snr : ""]
+    det.textContent = [g.ort, g.snr ? "Nr. " + g.snr : ""]
       .filter(Boolean).join(" · ") || "—";
     mid.append(opp, det);
 
@@ -1574,9 +1602,15 @@ function renderSpielplan(){
     rt.className = "rt";
     const tm = document.createElement("span"); tm.className = "tm";
     tm.textContent = g.zeit || "–";
-    const bs = document.createElement("span"); bs.className = "bs";
+    const bs = document.createElement("span");
     const bes = besammlungVon(g);
-    bs.textContent = bes ? "ab " + bes : "";
+    if(g.ergebnis){
+      bs.className = "bs res";
+      bs.textContent = g.ergebnis;
+    }else{
+      bs.className = "bs";
+      bs.textContent = bes ? "ab " + bes : "";
+    }
     rt.append(tm, bs);
 
     b.append(dt, mid, rt);
