@@ -469,6 +469,8 @@
     .wrap{display:none!important}
     body[data-print="auf"]  #sheetA4{display:block}
     body[data-print="plan"] #sheetPlan{display:block}
+    /* Gleiche Breite wie beim Ausmessen, sonst stimmt die Skalierung nicht. */
+    #sheetA4,#sheetPlan{width:186mm;margin:0 auto}
   }
 </style>
 </head>
@@ -534,6 +536,10 @@
         <div class="field">
           <label for="f-ort">Spielort</label>
           <input id="f-ort" type="text" placeholder="z.B. Sportplatz Herti, Zug" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-maps">Google-Maps-Link</label>
+          <input id="f-maps" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/…" autocomplete="off">
         </div>
       </div>
     </div>
@@ -631,6 +637,16 @@
       <div class="sec">
         <div class="sec-h"><h2>Profil</h2></div>
         <div class="fields">
+          <div class="row2">
+            <div class="field" style="margin-top:0">
+              <label for="p-nr">Trikotnummer</label>
+              <input id="p-nr" type="number" inputmode="numeric" min="1" max="99">
+            </div>
+            <div class="field" style="margin-top:0;justify-content:flex-end">
+              <label>&nbsp;</label>
+              <button class="btn" id="p-nrsave">Nummer übernehmen</button>
+            </div>
+          </div>
           <div class="row2">
             <div class="field" style="margin-top:0">
               <label for="p-pos">Position</label>
@@ -917,7 +933,7 @@ function kurzname(nr){ return vorname(nr); }
 
 /* ---------- Speicher ---------- */
 function blankWeek(){
-  return { v:3, att:{}, grund:{}, spiel:{gegner:"",zeit:"",treff:"",ort:""},
+  return { v:3, att:{}, grund:{}, spiel:{gegner:"",zeit:"",treff:"",ort:"",maps:""},
            auf:{form:STD_FORM, slots:{}} };
 }
 function weekKey(d){ return "td:week:" + iso(d || monday); }
@@ -1032,6 +1048,7 @@ function renderWeek(){
     if(!week.spiel.gegner && g.gegner){ week.spiel.gegner = g.gegner; uebernommen = true; }
     if(!week.spiel.zeit   && g.zeit)  { week.spiel.zeit   = g.zeit;   uebernommen = true; }
     if(!week.spiel.ort    && g.ort)   { week.spiel.ort    = g.ort;    uebernommen = true; }
+    if(!week.spiel.maps   && g.maps)  { week.spiel.maps   = g.maps;   uebernommen = true; }
     const bes = besammlungVon(g);
     if(!week.spiel.treff  && bes)     { week.spiel.treff  = bes;      uebernommen = true; }
     if(uebernommen) saveWeek();
@@ -1041,6 +1058,7 @@ function renderWeek(){
   document.getElementById("f-zeit").value   = week.spiel.zeit;
   document.getElementById("f-treff").value  = week.spiel.treff;
   document.getElementById("f-ort").value    = week.spiel.ort;
+  document.getElementById("f-maps").value   = week.spiel.maps || "";
 
   const list = document.getElementById("list");
   list.textContent = "";
@@ -1218,8 +1236,10 @@ function buildListText(){
   const s = week.spiel;
   lines.push("Besammlung:" + (s.treff ? " " + s.treff : ""));
   if(s.zeit)   lines.push("Spielzeit: " + s.zeit);
-  if(s.ort)    lines.push("Spielort: " + s.ort);
   if(s.gegner) lines.push("Gegner: " + s.gegner);
+  if(s.ort)    lines.push("Spielort: " + s.ort);
+  /* Karte zwei Zeilen unter dem Spielort */
+  if(s.maps)   lines.push("", s.maps);
   const abs = absenzen();
   if(abs.length){
     lines.push("", "Absenzen:");
@@ -1512,7 +1532,7 @@ function ergaenzeSeed(l){
   });
   SPIELPLAN_STD.forEach(g=>{
     if(kennt.has("n" + g.snr) || kennt.has("d" + g.datum)) return;
-    l.push(Object.assign({id:neueId(), ort:"", besammlung:"", ergebnis:""}, g));
+    l.push(Object.assign({id:neueId(), ort:"", maps:"", besammlung:"", ergebnis:""}, g));
   });
   writeJSON("td:spielplan", l);
   writeJSON("td:spielplan:stand", SEED_STAND);
@@ -1523,7 +1543,7 @@ function spielplan(){
   let l = readJSON("td:spielplan", null);
   if(l === null){
     l = SPIELPLAN_STD.map(g=> Object.assign(
-      {id:neueId(), ort:"", besammlung:"", ergebnis:""}, g));
+      {id:neueId(), ort:"", maps:"", besammlung:"", ergebnis:""}, g));
     writeJSON("td:spielplan", l);
     writeJSON("td:spielplan:stand", SEED_STAND);
   }else{
@@ -1682,6 +1702,7 @@ function openSpielSheet(id){
   const iGeg = mk("sp-gegner", "Gegner", "z.B. FC Cham b", "text", g ? g.gegner : "");
   const iZeit= mk("sp-zeit",   "Anpfiff", "14:00", "text", g ? g.zeit : "");
   const iOrt = mk("sp-ort",    "Spielort", "z.B. Sportanlage Herti, Zug", "text", g ? g.ort : "");
+  const iMap = mk("sp-maps",   "Google-Maps-Link", "https://maps.app.goo.gl/…", "url", g ? (g.maps||"") : "");
   const iBes = mk("sp-bes",    "Besammlung (leer = automatisch)", "", "text", g ? (g.besammlung||"") : "");
   const iErg = mk("sp-erg",    "Resultat (optional)", "z.B. 3:2", "text", g ? (g.ergebnis||"") : "");
   const iSnr = mk("sp-snr",    "Spielnummer (optional)", "z.B. 167841", "text", g ? (g.snr||"") : "");
@@ -1719,6 +1740,7 @@ function openSpielSheet(id){
       gegner: iGeg.value.trim(),
       zeit:   iZeit.value.trim(),
       ort:    iOrt.value.trim(),
+      maps:   iMap.value.trim(),
       besammlung: iBes.value.trim(),
       ergebnis:   iErg.value.trim(),
       snr:        iSnr.value.trim()
@@ -1732,6 +1754,14 @@ function openSpielSheet(id){
     renderWeek();
   };
   bar.appendChild(ok);
+
+  if(g && g.maps){
+    const karte = document.createElement("button");
+    karte.className = "btn";
+    karte.textContent = "Karte öffnen";
+    karte.onclick = ()=> window.open(g.maps, "_blank", "noopener");
+    bar.appendChild(karte);
+  }
 
   if(g){
     const del = document.createElement("button");
@@ -1865,8 +1895,10 @@ function parsePlan(text){
     }
 
     const snrM = /Spielnummer\s*(\d{4,})/i.exec(zeile);
+    const mapM = /(https?:\/\/(?:maps\.app\.goo\.gl|goo\.gl\/maps|(?:www\.)?google\.[a-z.]+\/maps)\S+)/i.exec(zeile);
     if(!gegner && !zeit) return;
     treffer.push({id:neueId(), datum, zeit, heim, gegner, ort:ort.trim(),
+                  maps: mapM ? mapM[1] : "",
                   besammlung:"", ergebnis:"", snr: snrM ? snrM[1] : ""});
   });
   return treffer;
@@ -1965,6 +1997,7 @@ function planText(){
     if(g.ort)  zeile2.push(g.ort);
     if(g.snr)  zeile2.push("Nr. " + g.snr);
     if(zeile2.length) l.push("   " + zeile2.join(" · "));
+    if(g.maps) l.push("   " + g.maps);
   });
   l.push("", "Besammlung: Heim 1 Std., auswärts 45 Min. vor Anpfiff.");
   return l.join("\n");
@@ -2239,6 +2272,7 @@ function openPlayerDetail(nr){
 
   document.getElementById("spl-name").textContent = e[2].split(" ")[0];
   document.getElementById("spl-nr").textContent   = "Nr. " + nr;
+  document.getElementById("p-nr").value           = nr;
 
   const p = profil(nr);
   document.getElementById("p-pos").value   = p.pos;
@@ -2566,6 +2600,68 @@ function openAddSheet(){
   iNr.focus();
 }
 
+/* Trikotnummer ändern — alle Daten hängen an der Nummer und ziehen mit. */
+function aendereNummer(alt, neu){
+  if(!Number.isFinite(neu) || neu < 1 || neu > 99){
+    setStatus("Nummer 1–99 eingeben"); return false;
+  }
+  if(neu === alt) return true;
+  if(KADER.some(p=> p[0] === neu)){
+    alert("Nummer " + neu + " ist bereits vergeben.");
+    return false;
+  }
+
+  const e = spieler(alt);
+  if(!e) return false;
+  e[0] = neu;
+  speichereKader();
+
+  const verschiebe = (vonKey, nachKey)=>{
+    try{
+      const wert = localStorage.getItem(vonKey);
+      if(wert === null) return;
+      localStorage.setItem(nachKey, wert);
+      localStorage.removeItem(vonKey);
+    }catch(err){}
+  };
+  verschiebe(profilKey(alt), profilKey(neu));
+  verschiebe(logKey(alt),    logKey(neu));
+
+  const keys = [];
+  for(let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(k && k.indexOf("td:week:") === 0) keys.push(k);
+  }
+  keys.forEach(k=>{
+    const w = readJSON(k, null);
+    if(!w) return;
+    let dirty = false;
+    DAYS.forEach(d=>{
+      ["att","grund"].forEach(feld=>{
+        if(!w[feld]) return;
+        const von = alt + "-" + d, nach = neu + "-" + d;
+        if(w[feld][von] != null){
+          w[feld][nach] = w[feld][von];
+          delete w[feld][von];
+          dirty = true;
+        }
+      });
+    });
+    if(w.auf && w.auf.slots){
+      Object.keys(w.auf.slots).forEach(s=>{
+        if(w.auf.slots[s] === alt){ w.auf.slots[s] = neu; dirty = true; }
+      });
+    }
+    if(dirty){ try{ localStorage.setItem(k, JSON.stringify(w)); }catch(err){} }
+  });
+
+  openPlayer = neu;
+  loadWeek();
+  renderPlayerList();
+  setStatus("Nummer " + alt + " → " + neu);
+  return true;
+}
+
 function entferneSpieler(nr){
   const p = spieler(nr);
   if(!p) return;
@@ -2624,7 +2720,7 @@ document.getElementById("reset").onclick = ()=>{
   renderAufstellung();
 };
 
-[["f-gegner","gegner"],["f-zeit","zeit"],["f-treff","treff"],["f-ort","ort"]].forEach(([id,prop])=>{
+[["f-gegner","gegner"],["f-zeit","zeit"],["f-treff","treff"],["f-ort","ort"],["f-maps","maps"]].forEach(([id,prop])=>{
   document.getElementById(id).oninput = (e)=>{
     week.spiel[prop] = e.target.value;
     saveWeek();
@@ -2676,6 +2772,15 @@ document.getElementById("spl-back").onclick = ()=>{
 };
 ["p-pos","p-fuss"].forEach(id=>{ document.getElementById(id).onchange = saveProfile; });
 document.getElementById("p-notiz").oninput  = saveProfile;
+document.getElementById("p-nrsave").onclick = ()=>{
+  if(openPlayer === null) return;
+  const neu = parseInt(document.getElementById("p-nr").value, 10);
+  if(!aendereNummer(openPlayer, neu)){
+    document.getElementById("p-nr").value = openPlayer;
+    return;
+  }
+  openPlayerDetail(openPlayer);
+};
 document.getElementById("p-vsave").onclick  = saveVerletzung;
 document.getElementById("p-vclear").onclick = clearVerletzung;
 document.getElementById("p-logadd").onclick = addLog;
