@@ -28,6 +28,8 @@
     --pitch:#9A9C98;
     --tap:44px;
     --barh:48px;
+    --colw:clamp(46px,14vw,58px);
+    --zebra:rgba(22,24,28,.028);
     --pad:clamp(12px,4vw,20px);
     --gap:clamp(4px,1.4vw,7px);
   }
@@ -45,6 +47,7 @@
       --green:#3FA968;
       --grey:#767C85;
       --pitch:#4A5058;
+      --zebra:rgba(255,255,255,.028);
     }
   }
   :root[data-theme="dark"]{
@@ -60,6 +63,7 @@
     --green:#3FA968;
     --grey:#767C85;
     --pitch:#4A5058;
+    --zebra:rgba(255,255,255,.028);
   }
 
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -154,26 +158,31 @@
   .week .kw{font-size:14px;font-weight:700;letter-spacing:.02em}
   .week .rg{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
 
-  /* ---------- Anwesenheitsraster ---------- */
+  /* ---------- Anwesenheitsraster ----------
+     Namensspalte gedeckelt, damit die Tage nicht an den rechten Rand driften. */
   .r3{
     display:grid;
-    grid-template-columns:minmax(0,1fr) repeat(3,clamp(44px,13.5vw,56px));
-    gap:var(--gap);
+    grid-template-columns:minmax(0,1fr) repeat(3,var(--colw));
+    column-gap:0;
     padding:0 var(--pad);
   }
+  .r3 > *:nth-child(2){border-left:1px solid var(--rule)}
   .colhead{
-    padding:9px 0 8px;border-bottom:1px solid var(--rule2);
+    padding:8px 0 7px;border-bottom:1px solid var(--rule2);
     position:sticky;top:var(--barh);background:var(--paper);z-index:10;
   }
-  .colhead .ch{text-align:center}
+  .colhead .ch{text-align:center;padding:0 3px}
   .colhead .d{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
   .colhead .dt{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
   .colhead .n{font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;margin-top:2px;color:var(--ink2)}
   .colhead .ch.m .d{color:var(--red)}
 
   ul{list-style:none;margin:0;padding:0}
-  .roster li{align-items:center;padding:5px var(--pad);border-bottom:1px solid var(--rule)}
+  .roster li{align-items:center;padding:0 var(--pad);border-bottom:1px solid var(--rule)}
+  .roster li:nth-child(even){background:var(--zebra)}
   .roster li.hurt{background:var(--sunk)}
+  .roster .who{padding:7px 10px 7px 0}
+  .roster .cell{margin:4px 3px}
 
   .who{
     display:flex;align-items:center;gap:10px;min-width:0;
@@ -197,7 +206,7 @@
   .hurt .n1{color:var(--ink2)}
 
   .cell{
-    height:var(--tap);border:1px solid var(--rule2);
+    height:calc(var(--tap) - 6px);border:1px solid var(--rule2);
     background:var(--paper2);color:var(--muted);
     font-size:17px;font-weight:700;line-height:1;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
@@ -281,6 +290,46 @@
   .entry .what{font-size:14px;line-height:1.55;white-space:pre-wrap}
   .entry .del{margin-top:10px}
 
+  /* ---------- Spielplan ---------- */
+  .game{
+    display:grid;grid-template-columns:52px minmax(0,1fr) auto;
+    gap:0 12px;align-items:center;width:100%;
+    background:none;border:0;border-bottom:1px solid var(--rule);
+    color:var(--ink);padding:11px var(--pad);cursor:pointer;
+    text-align:left;font-family:inherit;
+  }
+  .game:active{background:var(--sunk)}
+  .game.next{background:var(--zebra);box-shadow:inset 3px 0 0 var(--red)}
+  .game.past{opacity:.5}
+  .game .dt{text-align:center;font-variant-numeric:tabular-nums}
+  .game .dt > span{display:block}
+  .game .dt .dw{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .game .dt .dd{font-size:19px;font-weight:700;line-height:1.05}
+  .game .dt .mm{font-size:10px;color:var(--muted)}
+  .game .mid{min-width:0}
+  .game .mid > span{display:block}
+  .game .opp{font-size:15px;font-weight:600;line-height:1.3;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .game .det{font-size:11px;color:var(--muted);line-height:1.35;margin-top:1px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ha{
+    display:inline-block;font-size:9px;font-weight:700;letter-spacing:.08em;
+    padding:1px 4px;border:1px solid var(--rule2);color:var(--muted);
+    vertical-align:1px;margin-right:2px;
+  }
+  .ha.h{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .game .rt{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .game .rt > span{display:block}
+  .game .rt .tm{font-size:15px;font-weight:700}
+  .game .rt .bs{font-size:10.5px;color:var(--red);font-weight:600}
+  .seg{display:flex;border:1px solid var(--rule2)}
+  .seg button{
+    flex:1;background:var(--paper2);border:0;color:var(--ink2);
+    padding:11px 6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .seg button + button{border-left:1px solid var(--rule2)}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
   /* ---------- Präsenztabelle ---------- */
   .pres{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
   .pres th,.pres td{border-bottom:1px solid var(--rule);padding:9px 4px;text-align:right;font-size:13px}
@@ -345,13 +394,15 @@
   @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
   /* =================== A4-Druck =================== */
-  #sheetA4{display:none}
+  #sheetA4,#sheetPlan{display:none}
   @page{size:A4 portrait;margin:13mm}
   @media print{
     html,body{background:#fff;color:#000}
     body{padding:0}
     .wrap{display:none!important}
-    #sheetA4{display:block;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#000}
+    #sheetA4,#sheetPlan{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#000}
+    body[data-print="auf"]  #sheetA4{display:block}
+    body[data-print="plan"] #sheetPlan{display:block}
 
     .a4-h{display:flex;align-items:flex-end;gap:5mm;border-bottom:1.6pt solid #000;padding-bottom:2.5mm}
     .a4-h .l{flex:1}
@@ -391,6 +442,24 @@
     .a4-cols .none{color:#999}
     .a4-foot{margin-top:5mm;border-top:.5pt solid #ccc;padding-top:1.8mm;
       font-size:7.5pt;color:#666;display:flex;justify-content:space-between}
+
+    /* Spielplan-Bogen */
+    .pl-tab{width:100%;border-collapse:collapse;margin-top:4mm}
+    .pl-tab th{
+      font-size:7pt;letter-spacing:.12em;text-transform:uppercase;color:#666;
+      text-align:left;border-bottom:1pt solid #000;padding:0 2mm 1.5mm 0;font-weight:600;
+    }
+    .pl-tab td{
+      font-size:9.5pt;padding:2.1mm 2mm 2.1mm 0;border-bottom:.5pt solid #ccc;
+      vertical-align:baseline;
+    }
+    .pl-tab .c-dat{width:26mm;white-space:nowrap;font-weight:600}
+    .pl-tab .c-ha{width:16mm}
+    .pl-tab .c-zeit,.pl-tab .c-bes{width:17mm;white-space:nowrap;font-variant-numeric:tabular-nums}
+    .pl-tab .c-bes{font-weight:700}
+    .pl-tab .c-ort{color:#555;font-size:8.5pt}
+    .pl-tab tr.past td{color:#999}
+    .pl-note{margin-top:4mm;font-size:8pt;color:#666;line-height:1.6}
   }
 </style>
 </head>
@@ -485,6 +554,24 @@
     <div class="bar">
       <button class="btn solid" id="auf-print">Auf A4 drucken</button>
       <button class="btn quiet" id="auf-clear">Leeren</button>
+    </div>
+  </section>
+
+  <!-- ================= Spielplan ================= -->
+  <section id="view-plan" hidden>
+    <div class="sec-h"><h2>Spielplan</h2><span id="plan-cnt">–</span></div>
+    <div id="plan-items"></div>
+    <p class="hint">
+      Besammlung wird automatisch gesetzt: <b>Heim in Zug 1 Std.</b>, <b>auswärts 45 Min.</b> vor Anpfiff.
+      Beim Antippen eines Spiels lässt sie sich für dieses Spiel überschreiben.
+    </p>
+    <div class="bar">
+      <button class="btn solid" id="plan-add">Spiel hinzufügen</button>
+      <button class="btn" id="plan-paste">Aus Match Center einfügen</button>
+    </div>
+    <div class="bar" style="padding-top:0">
+      <button class="btn quiet" id="plan-share">Spielplan teilen</button>
+      <button class="btn quiet" id="plan-print">Auf A4 drucken</button>
     </div>
   </section>
 
@@ -704,6 +791,31 @@
   <p class="a4-foot"><span id="a4-f1">–</span><span>Trainer Dion Ramadani</span></p>
 </div>
 
+<!-- ================= A4 Spielplan ================= -->
+<div id="sheetPlan">
+  <div class="a4-h">
+    <div class="l">
+      <p class="a4-club">Zug 94 · D-Junioren · 3. Stärkeklasse</p>
+      <h1 class="a4-t">Team Dd — Spielplan</h1>
+    </div>
+    <div class="a4-r" id="pl-right">–</div>
+  </div>
+  <table class="pl-tab">
+    <thead>
+      <tr>
+        <th class="c-dat">Datum</th>
+        <th class="c-ha">H / A</th>
+        <th>Gegner · Ort</th>
+        <th class="c-zeit">Anpfiff</th>
+        <th class="c-bes">Besammlung</th>
+      </tr>
+    </thead>
+    <tbody id="pl-body"></tbody>
+  </table>
+  <p class="pl-note" id="pl-note">–</p>
+  <p class="a4-foot"><span id="pl-f1">–</span><span>Trainer Dion Ramadani</span></p>
+</div>
+
 <script>
 "use strict";
 
@@ -903,6 +1015,18 @@ function renderWeek(){
   DAYS.forEach(d=>{
     document.getElementById("d-"+d).textContent = fmt(addDays(monday, DAY_OFF[d]));
   });
+
+  /* Passendes Spiel aus dem Spielplan füllt leere Felder der Woche. */
+  const g = spielAm(tagIso("ma"));
+  if(g){
+    let uebernommen = false;
+    if(!week.spiel.gegner && g.gegner){ week.spiel.gegner = g.gegner; uebernommen = true; }
+    if(!week.spiel.zeit   && g.zeit)  { week.spiel.zeit   = g.zeit;   uebernommen = true; }
+    if(!week.spiel.ort    && g.ort)   { week.spiel.ort    = g.ort;    uebernommen = true; }
+    const bes = besammlungVon(g);
+    if(!week.spiel.treff  && bes)     { week.spiel.treff  = bes;      uebernommen = true; }
+    if(uebernommen) saveWeek();
+  }
 
   document.getElementById("f-gegner").value = week.spiel.gegner;
   document.getElementById("f-zeit").value   = week.spiel.zeit;
@@ -1347,6 +1471,450 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c=> ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
+/* ---------- Spielplan ----------
+   Besammlung: Heim 60 Min., auswärts 45 Min. vor Anpfiff. */
+const VORLAUF = {heim:60, auswaerts:45};
+const WOTAG = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+
+function spielplan(){
+  return readJSON("td:spielplan", []).slice()
+    .sort((a,b)=> (a.datum||"").localeCompare(b.datum||"") ||
+                  (a.zeit||"").localeCompare(b.zeit||""));
+}
+function saveSpielplan(l){ writeJSON("td:spielplan", l); }
+
+function minusMin(hhmm, min){
+  const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm||"").trim());
+  if(!m) return "";
+  let t = Number(m[1])*60 + Number(m[2]) - min;
+  if(t < 0) t += 1440;
+  return String(Math.floor(t/60)).padStart(2,"0") + ":" + String(t%60).padStart(2,"0");
+}
+function besammlungVon(g){
+  if(g.besammlung) return g.besammlung;
+  return minusMin(g.zeit, g.heim ? VORLAUF.heim : VORLAUF.auswaerts);
+}
+function spielAm(datumIso){
+  return spielplan().find(g=> g.datum === datumIso) || null;
+}
+
+function renderSpielplan(){
+  const list  = spielplan();
+  const heute = iso(new Date());
+  const naechstes = list.find(g=> g.datum >= heute);
+
+  document.getElementById("plan-cnt").textContent =
+    list.length ? list.length + " Spiele" : "leer";
+
+  const box = document.getElementById("plan-items");
+  box.textContent = "";
+  if(!list.length){
+    const p = document.createElement("p");
+    p.className = "empty";
+    p.textContent = "Noch keine Spiele erfasst.";
+    box.appendChild(p);
+    renderPlanA4();
+    return;
+  }
+
+  list.forEach(g=>{
+    const d = fromIso(g.datum);
+    const b = document.createElement("button");
+    b.className = "game" + (g.datum < heute ? " past" : "") +
+                  (naechstes && g.id === naechstes.id ? " next" : "");
+
+    const dt = document.createElement("span");
+    dt.className = "dt";
+    const dw = document.createElement("span"); dw.className = "dw";
+    dw.textContent = d ? WOTAG[d.getDay()] : "";
+    const dd = document.createElement("span"); dd.className = "dd";
+    dd.textContent = d ? String(d.getDate()).padStart(2,"0") : "–";
+    const mm = document.createElement("span"); mm.className = "mm";
+    mm.textContent = d ? String(d.getMonth()+1).padStart(2,"0") + "." + d.getFullYear() : "";
+    dt.append(dw, dd, mm);
+
+    const mid = document.createElement("span");
+    mid.className = "mid";
+    const opp = document.createElement("span");
+    opp.className = "opp";
+    const ha = document.createElement("span");
+    ha.className = "ha" + (g.heim ? " h" : "");
+    ha.textContent = g.heim ? "HEIM" : "AUSW";
+    opp.append(ha, document.createTextNode(" " + (g.gegner || "Gegner offen")));
+    const det = document.createElement("span");
+    det.className = "det";
+    det.textContent = [g.ort, g.ergebnis].filter(Boolean).join(" · ") || "—";
+    mid.append(opp, det);
+
+    const rt = document.createElement("span");
+    rt.className = "rt";
+    const tm = document.createElement("span"); tm.className = "tm";
+    tm.textContent = g.zeit || "–";
+    const bs = document.createElement("span"); bs.className = "bs";
+    const bes = besammlungVon(g);
+    bs.textContent = bes ? "ab " + bes : "";
+    rt.append(tm, bs);
+
+    b.append(dt, mid, rt);
+    b.onclick = ()=> openSpielSheet(g.id);
+    box.appendChild(b);
+  });
+  renderPlanA4();
+}
+
+function openSpielSheet(id){
+  const list = spielplan();
+  const g = id ? list.find(x=> x.id === id) : null;
+  closeSheet();
+
+  const veil = document.createElement("div");
+  veil.className = "veil";
+  veil.onclick = (e)=>{ if(e.target === veil) closeSheet(); };
+  const sheet = document.createElement("div");
+  sheet.className = "sheet";
+
+  const h = document.createElement("div");
+  h.className = "sheet-h";
+  const t = document.createElement("h3");
+  t.textContent = g ? "Spiel bearbeiten" : "Spiel hinzufügen";
+  const x = document.createElement("button");
+  x.className = "x"; x.textContent = "✕"; x.onclick = closeSheet;
+  h.append(t, x);
+  sheet.appendChild(h);
+
+  const box = document.createElement("div");
+  box.className = "fields";
+  const mk = (id2, label, ph, type, val)=>{
+    const f = document.createElement("div");
+    f.className = "field";
+    const l = document.createElement("label");
+    l.setAttribute("for", id2); l.textContent = label;
+    const i = document.createElement("input");
+    i.id = id2; i.type = type || "text"; i.placeholder = ph || "";
+    i.autocomplete = "off"; i.value = val || "";
+    f.append(l, i); box.appendChild(f);
+    return i;
+  };
+
+  const iDat = mk("sp-datum", "Datum", "", "date", g ? g.datum : "");
+
+  const fHa = document.createElement("div");
+  fHa.className = "field";
+  const lHa = document.createElement("label");
+  lHa.textContent = "Heim oder auswärts";
+  const seg = document.createElement("div");
+  seg.className = "seg";
+  let heim = g ? !!g.heim : true;
+  const bH = document.createElement("button");
+  const bA = document.createElement("button");
+  bH.type = "button"; bA.type = "button";
+  bH.textContent = "Heim (Zug)"; bA.textContent = "Auswärts";
+  const paintSeg = ()=>{
+    bH.setAttribute("aria-pressed", heim ? "true" : "false");
+    bA.setAttribute("aria-pressed", heim ? "false" : "true");
+  };
+  bH.onclick = ()=>{ heim = true;  paintSeg(); zeigeBes(); };
+  bA.onclick = ()=>{ heim = false; paintSeg(); zeigeBes(); };
+  paintSeg();
+  seg.append(bH, bA);
+  fHa.append(lHa, seg);
+  box.appendChild(fHa);
+
+  const iGeg = mk("sp-gegner", "Gegner", "z.B. FC Cham b", "text", g ? g.gegner : "");
+  const iZeit= mk("sp-zeit",   "Anpfiff", "14:00", "text", g ? g.zeit : "");
+  const iOrt = mk("sp-ort",    "Spielort", "z.B. Sportanlage Herti, Zug", "text", g ? g.ort : "");
+  const iBes = mk("sp-bes",    "Besammlung (leer = automatisch)", "", "text", g ? (g.besammlung||"") : "");
+  const iErg = mk("sp-erg",    "Resultat (optional)", "z.B. 3:2", "text", g ? (g.ergebnis||"") : "");
+
+  const auto = document.createElement("p");
+  auto.className = "hint";
+  auto.style.paddingTop = "0";
+  const zeigeBes = ()=>{
+    const a = minusMin(iZeit.value, heim ? VORLAUF.heim : VORLAUF.auswaerts);
+    auto.textContent = a
+      ? "Automatisch: Besammlung " + a + " (" + (heim ? "Heim, 1 Std." : "auswärts, 45 Min.") + " vor Anpfiff)"
+      : "Anpfiff als hh:mm eingeben, dann wird die Besammlung berechnet.";
+  };
+  iZeit.oninput = zeigeBes;
+  zeigeBes();
+
+  sheet.appendChild(box);
+  sheet.appendChild(auto);
+
+  const msg = document.createElement("p");
+  msg.className = "hint";
+  msg.style.color = "var(--red)";
+  sheet.appendChild(msg);
+
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  const ok = document.createElement("button");
+  ok.className = "btn solid";
+  ok.textContent = g ? "Speichern" : "Hinzufügen";
+  ok.onclick = ()=>{
+    if(!iDat.value){ msg.textContent = "Datum fehlt."; return; }
+    const daten = {
+      datum: iDat.value,
+      heim,
+      gegner: iGeg.value.trim(),
+      zeit:   iZeit.value.trim(),
+      ort:    iOrt.value.trim(),
+      besammlung: iBes.value.trim(),
+      ergebnis:   iErg.value.trim()
+    };
+    const l = spielplan();
+    if(g) Object.assign(l.find(x=> x.id === g.id), daten);
+    else  l.push(Object.assign({id: neueId()}, daten));
+    saveSpielplan(l);
+    closeSheet();
+    renderSpielplan();
+    renderWeek();
+  };
+  bar.appendChild(ok);
+
+  if(g){
+    const del = document.createElement("button");
+    del.className = "btn red";
+    del.textContent = "Löschen";
+    del.onclick = ()=>{
+      if(!confirm("Dieses Spiel löschen?")) return;
+      saveSpielplan(spielplan().filter(x=> x.id !== g.id));
+      closeSheet();
+      renderSpielplan();
+    };
+    bar.appendChild(del);
+  }
+  sheet.appendChild(bar);
+
+  veil.appendChild(sheet);
+  document.body.appendChild(veil);
+}
+
+function neueId(){ return Date.now() + "-" + Math.random().toString(36).slice(2,8); }
+
+/* Aus dem Match Center kopierte Zeilen einlesen.
+   Spalten sind dort durch Tabulatoren oder mehrere Leerzeichen getrennt. */
+const WOTAG_RE = /^(?:mo|di|mi|do|fr|sa|so)\.?\s+/i;
+function putzeTeam(s){
+  return String(s || "")
+    .replace(WOTAG_RE, "")
+    .replace(/^[\s.·|,-]+|[\s.·|,-]+$/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function parsePlan(text){
+  const treffer = [];
+  text.split(/\r?\n/).forEach(zeile=>{
+    let z = zeile.replace(/\t/g, "   ").replace(/\s+$/,"");
+    if(!z.trim()) return;
+
+    const md = /(\d{1,2})\.(\d{1,2})\.(\d{2,4})/.exec(z);
+    if(!md) return;
+    const jahr = md[3].length === 2 ? 2000 + Number(md[3]) : Number(md[3]);
+    const datum = jahr + "-" + String(Number(md[2])).padStart(2,"0") +
+                        "-" + String(Number(md[1])).padStart(2,"0");
+
+    const mt = /\b(\d{1,2}):(\d{2})\b/.exec(z);
+    const zeit = mt ? String(Number(mt[1])).padStart(2,"0") + ":" + mt[2] : "";
+
+    /* Datum und Zeit samt umgebender Einzelabstände entfernen,
+       damit Spaltentrenner (2+ Leerzeichen) erhalten bleiben. */
+    z = z.replace(new RegExp("[ ]?" + md[0].replace(/\./g,"\\.") + "[ ]?"), " ");
+    if(mt) z = z.replace(new RegExp("[ ]?" + mt[0] + "[ ]?"), " ");
+
+    let teile = z.split(/\s{2,}/).map(t=> t.trim()).filter(Boolean);
+
+    /* Steht der Trenner als eigene Spalte, die Nachbarn zusammenziehen. */
+    for(let i = 0; i < teile.length; i++){
+      if(/^(?:[-–—]|vs\.?)$/i.test(teile[i]) && i > 0 && i < teile.length - 1){
+        teile.splice(i - 1, 3, teile[i-1] + " - " + teile[i+1]);
+        break;
+      }
+    }
+
+    const paarIdx = teile.findIndex(t=> /\s[-–—]\s|\svs\.?\s/i.test(t));
+
+    let heim = true, gegner = "", ort = "";
+    const istUns = (s)=> /zug\s*94/i.test(s);
+
+    if(paarIdx >= 0){
+      const seiten = teile[paarIdx].split(/\s+[-–—]\s+|\s+vs\.?\s+/i);
+      const a = putzeTeam(seiten[0]);
+      const b = putzeTeam(seiten[1]);
+      if(istUns(a) && !istUns(b)){ heim = true;  gegner = b; }
+      else if(istUns(b))         { heim = false; gegner = a; }
+      else                       { heim = true;  gegner = b || a; }
+      ort = teile.filter((t,i)=> i !== paarIdx && !WOTAG_RE.test(t + " ") && t.length > 2)
+                 .join(", ");
+    }else{
+      const kandidaten = teile.filter(t=> !/^(?:mo|di|mi|do|fr|sa|so)\.?$/i.test(t));
+      gegner = putzeTeam(kandidaten[0] || "");
+      ort    = kandidaten.slice(1).join(", ");
+      if(istUns(gegner)) gegner = "";
+    }
+
+    if(!gegner && !zeit) return;
+    treffer.push({id:neueId(), datum, zeit, heim, gegner, ort:ort.trim(),
+                  besammlung:"", ergebnis:""});
+  });
+  return treffer;
+}
+
+function openPasteSheet(){
+  closeSheet();
+  const veil = document.createElement("div");
+  veil.className = "veil";
+  veil.onclick = (e)=>{ if(e.target === veil) closeSheet(); };
+  const sheet = document.createElement("div");
+  sheet.className = "sheet";
+
+  const h = document.createElement("div");
+  h.className = "sheet-h";
+  const t = document.createElement("h3");
+  t.textContent = "Aus Match Center einfügen";
+  const x = document.createElement("button");
+  x.className = "x"; x.textContent = "✕"; x.onclick = closeSheet;
+  h.append(t, x);
+  sheet.appendChild(h);
+
+  const p = document.createElement("p");
+  p.className = "hint";
+  p.textContent = "Spielliste im Match Center markieren, kopieren und hier einfügen. " +
+                  "Eine Zeile pro Spiel mit Datum, Zeit und beiden Teams.";
+  sheet.appendChild(p);
+
+  const box = document.createElement("div");
+  box.className = "fields";
+  const f = document.createElement("div");
+  f.className = "field";
+  const ta = document.createElement("textarea");
+  ta.placeholder = "Sa 06.09.2026 10:00 Zug 94 Dd - FC Cham b   Sportanlage Herti";
+  ta.style.minHeight = "160px";
+  f.appendChild(ta);
+  box.appendChild(f);
+  sheet.appendChild(box);
+
+  const msg = document.createElement("p");
+  msg.className = "hint";
+  sheet.appendChild(msg);
+
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  const vor = document.createElement("button");
+  vor.className = "btn";
+  vor.textContent = "Vorschau";
+  vor.onclick = ()=>{
+    const g = parsePlan(ta.value);
+    msg.style.color = g.length ? "var(--muted)" : "var(--red)";
+    msg.textContent = g.length
+      ? g.length + " Spiele erkannt: " + g.map(x=> fmtIso(x.datum) + " " + (x.gegner||"?")).join(" · ")
+      : "Keine Spiele erkannt. Prüfe, ob Datum und Uhrzeit in der Zeile stehen.";
+  };
+  const ok = document.createElement("button");
+  ok.className = "btn solid";
+  ok.textContent = "Übernehmen";
+  ok.onclick = ()=>{
+    const neu = parsePlan(ta.value);
+    if(!neu.length){
+      msg.style.color = "var(--red)";
+      msg.textContent = "Keine Spiele erkannt.";
+      return;
+    }
+    const alt = spielplan();
+    const kennt = new Set(alt.map(x=> x.datum + "|" + (x.zeit||"")));
+    const frisch = neu.filter(x=> !kennt.has(x.datum + "|" + (x.zeit||"")));
+    saveSpielplan(alt.concat(frisch));
+    closeSheet();
+    renderSpielplan();
+    renderWeek();
+    setStatus(frisch.length + " Spiele übernommen");
+  };
+  bar.append(vor, ok);
+  sheet.appendChild(bar);
+
+  veil.appendChild(sheet);
+  document.body.appendChild(veil);
+  ta.focus();
+}
+
+function planText(){
+  const list = spielplan();
+  if(!list.length) return "Spielplan Team Dd — noch keine Spiele erfasst.";
+  const l = ["Spielplan Team Dd — Zug 94, D-Junioren", ""];
+  list.forEach(g=>{
+    const d = fromIso(g.datum);
+    const bes = besammlungVon(g);
+    l.push((d ? WOTAG[d.getDay()] + " " + fmtIso(g.datum) : g.datum) +
+           " · " + (g.heim ? "Heim" : "Auswärts") +
+           " · " + (g.gegner || "Gegner offen"));
+    const zeile2 = [];
+    if(g.zeit) zeile2.push("Anpfiff " + g.zeit);
+    if(bes)    zeile2.push("Besammlung " + bes);
+    if(g.ort)  zeile2.push(g.ort);
+    if(zeile2.length) l.push("   " + zeile2.join(" · "));
+  });
+  l.push("", "Besammlung: Heim 1 Std., auswärts 45 Min. vor Anpfiff.");
+  return l.join("\n");
+}
+
+function renderPlanA4(){
+  const list  = spielplan();
+  const heute = iso(new Date());
+
+  document.getElementById("pl-right").innerHTML =
+    "<b>" + list.length + " Spiele</b>Stand " + fmtIso(heute);
+
+  const tb = document.getElementById("pl-body");
+  tb.textContent = "";
+  list.forEach(g=>{
+    const d = fromIso(g.datum);
+    const tr = document.createElement("tr");
+    if(g.datum < heute) tr.className = "past";
+
+    const c1 = document.createElement("td");
+    c1.className = "c-dat";
+    c1.textContent = (d ? WOTAG[d.getDay()] + " " : "") + fmtIso(g.datum);
+
+    const c2 = document.createElement("td");
+    c2.className = "c-ha";
+    c2.textContent = g.heim ? "Heim" : "Auswärts";
+
+    const c3 = document.createElement("td");
+    c3.textContent = g.gegner || "Gegner offen";
+    if(g.ort){
+      const o = document.createElement("div");
+      o.className = "c-ort";
+      o.textContent = g.ort;
+      c3.appendChild(o);
+    }
+    if(g.ergebnis){
+      const r = document.createElement("div");
+      r.className = "c-ort";
+      r.textContent = "Resultat " + g.ergebnis;
+      c3.appendChild(r);
+    }
+
+    const c4 = document.createElement("td");
+    c4.className = "c-zeit";
+    c4.textContent = g.zeit || "—";
+
+    const c5 = document.createElement("td");
+    c5.className = "c-bes";
+    c5.textContent = besammlungVon(g) || "—";
+
+    tr.append(c1, c2, c3, c4, c5);
+    tb.appendChild(tr);
+  });
+
+  document.getElementById("pl-note").textContent =
+    "Besammlung: Heimspiele in Zug 1 Stunde vor Anpfiff, Auswärtsspiele 45 Minuten vor Anpfiff. " +
+    "Abweichungen sind im Plan einzeln vermerkt.";
+  const kommend = list.filter(g=> g.datum >= heute).length;
+  document.getElementById("pl-f1").textContent =
+    kommend + " kommende Spiele · " + (list.length - kommend) + " gespielt";
+}
+
 /* ---------- Präsenz ---------- */
 function einstellungen(){
   return readJSON("td:einstellungen", {start:"2026-08-18"});
@@ -1754,6 +2322,7 @@ function buildAnalyseText(){
 const VIEWS = [
   {id:"anw", view:"view-anw", label:"Woche",       hint:"Anwesenheit & Spieltag"},
   {id:"auf", view:"view-auf", label:"Aufstellung", hint:"Formation & A4-Druck"},
+  {id:"plan",view:"view-plan",label:"Spielplan",   hint:"Termine & Besammlung"},
   {id:"pre", view:"view-pre", label:"Präsenz",     hint:"Trainingsquote"},
   {id:"spl", view:"view-spl", label:"Spieler",     hint:"Kader, Profile, Logbuch"},
   {id:"ana", view:"view-ana", label:"Analyse",     hint:"Spielanalysen"}
@@ -1765,7 +2334,8 @@ function showTab(id){
   VIEWS.forEach(v=>{ document.getElementById(v.view).hidden = v.id !== id; });
   const cur = VIEWS.find(v=> v.id === id);
   document.getElementById("menulab").textContent = cur ? cur.label : "Menü";
-  if(id === "auf") renderAufstellung();
+  if(id === "auf")  renderAufstellung();
+  if(id === "plan") renderSpielplan();
   if(id === "pre") renderPraesenz();
   if(id === "spl") renderPlayerList();
   if(id === "ana") renderAnalyseList();
@@ -1958,7 +2528,19 @@ document.getElementById("auf-clear").onclick = ()=>{
   saveWeek();
   renderAufstellung();
 };
-document.getElementById("auf-print").onclick = ()=>{ renderA4(); window.print(); };
+document.getElementById("auf-print").onclick = ()=>{
+  renderA4();
+  document.body.dataset.print = "auf";
+  window.print();
+};
+document.getElementById("plan-add").onclick   = ()=> openSpielSheet(null);
+document.getElementById("plan-paste").onclick = openPasteSheet;
+document.getElementById("plan-share").onclick = ()=> shareText(planText());
+document.getElementById("plan-print").onclick = ()=>{
+  renderPlanA4();
+  document.body.dataset.print = "plan";
+  window.print();
+};
 
 document.getElementById("f-start").onchange = (e)=>{
   const o = einstellungen();
