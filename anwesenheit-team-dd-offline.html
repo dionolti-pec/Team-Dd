@@ -28,7 +28,8 @@
     --pitch:#9A9C98;
     --tap:44px;
     --barh:48px;
-    --colw:clamp(46px,14vw,58px);
+    --colw:44px;
+    --namew:clamp(104px,30vw,124px);
     --zebra:rgba(22,24,28,.028);
     --pad:clamp(12px,4vw,20px);
     --gap:clamp(4px,1.4vw,7px);
@@ -77,7 +78,7 @@
     touch-action:manipulation;
   }
   button,select,input,textarea,a{touch-action:manipulation}
-  .wrap{max-width:620px;margin:0 auto;background:var(--paper)}
+  .wrap{max-width:460px;margin:0 auto;background:var(--paper)}
 
   /* ---------- Kopf ---------- */
   header{
@@ -162,7 +163,7 @@
      Namensspalte gedeckelt, damit die Tage nicht an den rechten Rand driften. */
   .r3{
     display:grid;
-    grid-template-columns:minmax(0,1fr) repeat(3,var(--colw));
+    grid-template-columns:minmax(0,var(--namew)) repeat(3,minmax(var(--colw),1fr));
     column-gap:0;
     padding:0 var(--pad);
   }
@@ -368,7 +369,7 @@
     display:flex;align-items:flex-end;justify-content:center;
   }
   .sheet{
-    background:var(--paper);width:100%;max-width:620px;max-height:86vh;
+    background:var(--paper);width:100%;max-width:460px;max-height:86vh;
     overflow:auto;border-top:3px solid var(--red);
     padding-bottom:calc(12px + env(safe-area-inset-bottom));
   }
