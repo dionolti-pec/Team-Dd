@@ -1,33 +1,37 @@
 :root {
-  --bg: #f2f3f7;
+  --bg: #f3f5fa;
   --surface: #ffffff;
   --surface-2: #ffffff;
-  --sunk: #eceef3;
-  --border: #e4e6ec;
-  --border-strong: #d6d9e1;
+  --sunk: #e9edf5;
+  --border: #dde2ed;
+  --border-strong: #c2cade;
 
-  --text: #14161c;
-  --text-2: #5b6070;
-  --text-3: #8b90a0;
+  --text: #10162e;
+  --text-2: #4b5570;
+  --text-3: #7c86a3;
 
-  --primary: #4f46e5;
+  /* Vereinsfarben Zug 94: dunkles Marineblau + helleres Himmelblau aus dem Wappen */
+  --primary: #1f2c5c;
   --primary-ink: #ffffff;
-  --primary-soft: #eeedfd;
+  --primary-soft: #e3e7f4;
 
-  --success: #16a34a;
-  --success-soft: #e7f7ec;
-  --danger: #dc2626;
-  --danger-soft: #fdeaea;
-  --hurt: #8b90a0;
-  --hurt-soft: #eceef3;
+  --accent: #4f8ec9;
+  --accent-soft: #e4f0fa;
 
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-sm: 10px;
+  --success: #157a41;
+  --success-soft: #e5f5eb;
+  --danger: #c22929;
+  --danger-soft: #fbe8e8;
+  --hurt: #7c86a3;
+  --hurt-soft: #e9edf5;
+
+  --radius-lg: 16px;
+  --radius-md: 11px;
+  --radius-sm: 8px;
   --radius-pill: 999px;
 
-  --shadow-card: 0 1px 2px rgba(20, 22, 28, 0.04), 0 8px 24px rgba(20, 22, 28, 0.06);
-  --shadow-float: 0 4px 16px rgba(20, 22, 28, 0.14), 0 1px 3px rgba(20, 22, 28, 0.08);
+  --shadow-card: 0 1px 2px rgba(16, 22, 46, 0.05);
+  --shadow-float: 0 12px 32px rgba(16, 22, 46, 0.2), 0 2px 6px rgba(16, 22, 46, 0.1);
 
   --tap: 46px;
   --pad: clamp(14px, 4.5vw, 22px);
@@ -36,56 +40,62 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0c0d11;
-    --surface: #16181f;
-    --surface-2: #1b1e26;
-    --sunk: #1f222b;
-    --border: #262932;
-    --border-strong: #333742;
+    --bg: #0b0d14;
+    --surface: #12151f;
+    --surface-2: #171b27;
+    --sunk: #1a1e2b;
+    --border: #262b3b;
+    --border-strong: #333a4e;
 
-    --text: #f1f2f6;
-    --text-2: #a7abb8;
-    --text-3: #6f7383;
+    --text: #eef0f8;
+    --text-2: #a3aac2;
+    --text-3: #6b728c;
 
-    --primary: #8b85f5;
-    --primary-ink: #10101c;
-    --primary-soft: #23213f;
+    --primary: #8b9ddb;
+    --primary-ink: #0b0d18;
+    --primary-soft: #232a45;
 
-    --success: #34d399;
-    --success-soft: #123527;
-    --danger: #f87171;
-    --danger-soft: #3a1c1e;
-    --hurt: #6f7383;
-    --hurt-soft: #21242d;
+    --accent: #6fb2e6;
+    --accent-soft: #1c2c3c;
 
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
-    --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.45);
+    --success: #3fbd77;
+    --success-soft: #123524;
+    --danger: #e2685f;
+    --danger-soft: #3a1c1c;
+    --hurt: #6b728c;
+    --hurt-soft: #1f2333;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --shadow-float: 0 12px 36px rgba(0, 0, 0, 0.5);
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #0c0d11;
-  --surface: #16181f;
-  --surface-2: #1b1e26;
-  --sunk: #1f222b;
-  --border: #262932;
-  --border-strong: #333742;
+  --bg: #0b0d14;
+  --surface: #12151f;
+  --surface-2: #171b27;
+  --sunk: #1a1e2b;
+  --border: #262b3b;
+  --border-strong: #333a4e;
 
-  --text: #f1f2f6;
-  --text-2: #a7abb8;
-  --text-3: #6f7383;
+  --text: #eef0f8;
+  --text-2: #a3aac2;
+  --text-3: #6b728c;
 
-  --primary: #8b85f5;
-  --primary-ink: #10101c;
-  --primary-soft: #23213f;
+  --primary: #8b9ddb;
+  --primary-ink: #0b0d18;
+  --primary-soft: #232a45;
 
-  --success: #34d399;
-  --success-soft: #123527;
-  --danger: #f87171;
-  --danger-soft: #3a1c1e;
-  --hurt: #6f7383;
-  --hurt-soft: #21242d;
+  --accent: #6fb2e6;
+  --accent-soft: #1c2c3c;
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-float: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --success: #3fbd77;
+  --success-soft: #123524;
+  --danger: #e2685f;
+  --danger-soft: #3a1c1c;
+  --hurt: #6b728c;
+  --hurt-soft: #1f2333;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 12px 36px rgba(0, 0, 0, 0.5);
 }

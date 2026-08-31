@@ -159,7 +159,7 @@
   .ring-wrap { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; }
   .ring { width: min(78vw, 300px); height: min(78vw, 300px); transform: rotate(-90deg); }
   .ring-bg { fill: none; stroke: var(--sunk); stroke-width: 10; }
-  .ring-fg { fill: none; stroke: var(--primary); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .ring-fg { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
   .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; padding: 0 20px; }
   .time { font-size: 52px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .label { font-size: 16px; font-weight: 700; }

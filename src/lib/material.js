@@ -1,6 +1,6 @@
 import { readJSON, writeJSON } from "./storage.js";
 
-const STD = ["Bälle", "Leibchen", "Hütchen", "Erste-Hilfe-Set", "Trinkflaschen"];
+const STD = ["Bälle", "Leibchen", "Hütchen", "Trinkflaschen", "Icetea", "Bananen"];
 
 export function materialListe() {
   return readJSON("td:material-liste", STD);

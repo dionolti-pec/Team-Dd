@@ -234,7 +234,9 @@
     cursor: pointer;
     margin-top: 2px;
   }
-  .next-card { padding-bottom: 14px; }
+  .next-card { padding-bottom: 14px; border-color: var(--accent); border-width: 1.5px; }
+  .next-card .card-title { color: var(--accent); }
+  .next-card .card-title span.meta { color: var(--text-2); }
   .next-line { font-size: 14.5px; font-weight: 600; }
 
   .mat-row {

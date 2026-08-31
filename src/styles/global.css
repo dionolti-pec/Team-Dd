@@ -41,27 +41,29 @@ h1, h2, h3, p { margin: 0; }
 }
 .topbar .eyebrow .seg { white-space: nowrap; }
 .topbar h1 {
-  font-size: 24px;
+  font-size: 27px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  font-stretch: condensed;
 }
 .topbar .sub { margin-top: 4px; font-size: 12.5px; color: var(--text-2); }
 
-.page { padding: 0 var(--pad) 8px; display: flex; flex-direction: column; gap: 14px; }
+.page { padding: 0 var(--pad) 8px; display: flex; flex-direction: column; gap: 12px; }
 
 .card {
   background: var(--surface);
   border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
-  padding: 16px;
+  padding: 15px;
 }
 .card + .card { margin-top: 0; }
 .card-title {
-  font-size: 11px;
-  letter-spacing: 0.1em;
+  font-size: 10.5px;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  font-weight: 700;
-  color: var(--text-3);
+  font-weight: 800;
+  color: var(--text-2);
   display: flex;
   align-items: baseline;
   gap: 8px;
