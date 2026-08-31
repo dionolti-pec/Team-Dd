@@ -1,7 +1,14 @@
 @import "./tokens.css";
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; }
+html {
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+  /* Wenn die Tastatur ein fokussiertes Feld ins Bild scrollt, soll es nicht
+     unter der Status-/Notch-Zone landen. */
+  scroll-padding-top: calc(100px + env(safe-area-inset-top));
+}
 body {
   margin: 0;
   background: var(--bg);
