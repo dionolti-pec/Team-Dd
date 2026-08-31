@@ -16,7 +16,7 @@
     <div class="a4-inner">
       <div class="a4-h">
         <div class="l">
-          <p class="a4-club">Zug 94 · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
+          <p class="a4-club">{store.einstellungen.verein} · {store.einstellungen.stufe} · {store.einstellungen.staerkeklasse} · {store.einstellungen.gruppe}</p>
           <h1 class="a4-t">Team Dd — Aufstellung</h1>
         </div>
         <div class="a4-r">
@@ -60,7 +60,7 @@
 
       <p class="a4-foot">
         <span>KW {kwOf(store.monday)} · {belegt.length} aufgestellt · {bank.length} Bank · {abs.length} Absenzen</span>
-        <span>Trainer Dion Ramadani</span>
+        <span>Trainer {store.einstellungen.trainerName}</span>
       </p>
     </div>
   </div>

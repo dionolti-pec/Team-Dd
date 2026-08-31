@@ -31,10 +31,20 @@ export const DAYS = ["di", "do", "ma"];
 export const DAY_LABEL = { di: "Dienstag", do: "Donnerstag", ma: "Match" };
 export const DAY_OFF = { di: 1, do: 3, ma: 5 };
 export const MARK = { ja: "✓", nein: "✗", verletzt: "V" };
-const EINST_STD = { start: "2026-08-18", gruss: "Hallo Zusammen,", signatur: "LG, Dion" };
+const EINST_STD = {
+  start: "2026-08-18",
+  gruss: "Hallo Zusammen,",
+  signatur: "LG, Dion",
+  verein: "Zug 94",
+  stufe: "Junioren D-9",
+  staerkeklasse: "Stärkeklasse 3",
+  gruppe: "Gruppe 8",
+  trainerName: "Dion Ramadani",
+  trainingstage: "Di / Do",
+};
 
 function blankWeek() {
-  return { v: 3, att: {}, grund: {}, spiel: { gegner: "", zeit: "", treff: "", ort: "", maps: "" }, auf: { form: STD_FORM, slots: {} } };
+  return { v: 3, att: {}, grund: {}, material: {}, spiel: { gegner: "", zeit: "", treff: "", ort: "", maps: "" }, auf: { form: STD_FORM, slots: {} } };
 }
 function weekKey(d) {
   return "td:week:" + iso(d);
@@ -136,6 +146,12 @@ export function setGrund(nr, day, text) {
   saveWeek();
 }
 
+export function toggleMaterial(name) {
+  if (store.week.material[name]) delete store.week.material[name];
+  else store.week.material[name] = true;
+  saveWeek();
+}
+
 export function counts(day) {
   let ja = 0, verl = 0;
   store.kader.forEach(([nr]) => {
@@ -187,6 +203,7 @@ export function loadWeek() {
       v: 3,
       att: stored.att || {},
       grund: stored.grund || {},
+      material: stored.material || {},
       spiel: Object.assign(blank.spiel, stored.spiel),
       auf: Object.assign(blank.auf, stored.auf),
     };

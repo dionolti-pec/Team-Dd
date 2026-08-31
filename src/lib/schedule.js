@@ -70,6 +70,11 @@ export function spielAm(datumIso) {
   return spielplan().find((g) => g.datum === datumIso) || null;
 }
 
+export function naechstesSpiel() {
+  const heute = iso(new Date());
+  return spielplan().find((g) => g.datum >= heute) || null;
+}
+
 export function planText() {
   const list = spielplan();
   if (!list.length) return "Spielplan Team Dd — noch keine Spiele erfasst.";
@@ -154,4 +159,21 @@ export function parsePlan(text) {
     treffer.push({ id: neueId(), datum, zeit, heim, gegner, ort: ort.trim(), maps: mapM ? mapM[1] : "", besammlung: "", ergebnis: "", snr: snrM ? snrM[1] : "" });
   });
   return treffer;
+}
+
+/* Resultate stehen als "eigene:gegner" (Sicht Zug 94, siehe SPIELPLAN_STD oben). */
+export function saisonBilanz(list) {
+  const b = { siege: 0, unentschieden: 0, niederlagen: 0, toreFuer: 0, toreGegen: 0, gespielt: 0 };
+  list.forEach((g) => {
+    const m = /^(\d+)\s*:\s*(\d+)$/.exec((g.ergebnis || "").trim());
+    if (!m) return;
+    const eigene = Number(m[1]), gegner = Number(m[2]);
+    b.gespielt++;
+    b.toreFuer += eigene;
+    b.toreGegen += gegner;
+    if (eigene > gegner) b.siege++;
+    else if (eigene === gegner) b.unentschieden++;
+    else b.niederlagen++;
+  });
+  return b;
 }

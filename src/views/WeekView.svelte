@@ -2,15 +2,31 @@
   import Sheet from "../components/Sheet.svelte";
   import KitBadge from "../components/KitBadge.svelte";
   import Icon from "../components/Icon.svelte";
-  import { fmt, fmtJ, addDays, kwOf } from "../lib/date.js";
+  import SettingsSheet from "../components/SettingsSheet.svelte";
+  import { fmt, fmtJ, fmtIso, addDays, iso, fromIso, kwOf, WOTAG } from "../lib/date.js";
   import {
     store, DAYS, DAY_LABEL, DAY_OFF, MARK,
-    attOf, setAtt, grundVon, setGrund, istVerletzt, tagIso, counts,
+    attOf, setAtt, grundVon, setGrund, istVerletzt, tagIso, counts, toggleMaterial,
     prevWeek, nextWeek, resetWeek, saveWeek, buildListText, setEinstellungen,
   } from "../lib/state.svelte.js";
   import { shareText } from "../lib/share.js";
+  import { naechstesSpiel, besammlungVon } from "../lib/schedule.js";
+  import { materialListe, addMaterial } from "../lib/material.js";
 
   let grundFor = $state(null);
+  let settingsOpen = $state(false);
+  let materialListeState = $state(materialListe());
+  let neuesMaterial = $state("");
+
+  const nextGame = $derived(naechstesSpiel());
+  const daysUntil = $derived(nextGame ? Math.round((fromIso(nextGame.datum) - fromIso(iso(new Date()))) / 86400000) : null);
+
+  function fuegeMaterialHinzu() {
+    const name = neuesMaterial.trim();
+    if (!name) return;
+    materialListeState = addMaterial(name);
+    neuesMaterial = "";
+  }
 
   function toggle(nr, day) {
     if (attOf(nr, day) === "verletzt") return;
@@ -35,12 +51,31 @@
 </script>
 
 <div class="topbar">
-  <p class="eyebrow"><span class="seg">Zug 94</span> · <span class="seg">Junioren D-9</span> · <span class="seg">Stärkeklasse 3</span> · <span class="seg">Gruppe 8</span></p>
-  <h1>Team Dd</h1>
-  <p class="sub">Trainer Dion Ramadani · Training Di / Do</p>
+  <div class="topbar-row">
+    <div style="min-width:0">
+      <p class="eyebrow">
+        <span class="seg">{store.einstellungen.verein}</span> · <span class="seg">{store.einstellungen.stufe}</span> · <span class="seg">{store.einstellungen.staerkeklasse}</span> · <span class="seg">{store.einstellungen.gruppe}</span>
+      </p>
+      <h1>Team Dd</h1>
+      <p class="sub">Trainer {store.einstellungen.trainerName} · Training {store.einstellungen.trainingstage}</p>
+    </div>
+    <button class="gear" onclick={() => (settingsOpen = true)} aria-label="Einstellungen"><Icon name="settings" size={18} /></button>
+  </div>
 </div>
 
 <div class="page">
+  {#if nextGame}
+    <div class="card next-card">
+      <div class="card-title">Nächstes Spiel<span class="meta">{daysUntil === 0 ? "heute" : daysUntil === 1 ? "morgen" : "in " + daysUntil + " Tagen"}</span></div>
+      <p class="next-line">
+        {fromIso(nextGame.datum) ? WOTAG[fromIso(nextGame.datum).getDay()] + " " : ""}{fmtIso(nextGame.datum)}
+        {#if nextGame.zeit}· {nextGame.zeit} Uhr{/if}
+        {#if nextGame.gegner}· {nextGame.heim ? "gegen" : "bei"} {nextGame.gegner}{/if}
+      </p>
+      {#if besammlungVon(nextGame)}<p class="hint" style="padding-top:2px">Besammlung {besammlungVon(nextGame)}</p>{/if}
+    </div>
+  {/if}
+
   <div class="card">
     <div class="week-nav">
       <button class="step" onclick={prevWeek} aria-label="Woche zurück">‹</button>
@@ -119,6 +154,20 @@
   </div>
 
   <div class="card">
+    <div class="card-title">Material<span class="meta">{Object.keys(store.week.material).length}/{materialListeState.length}</span></div>
+    {#each materialListeState as item}
+      <button class="mat-row" class:on={!!store.week.material[item]} onclick={() => toggleMaterial(item)}>
+        <span class="mat-check" class:on={!!store.week.material[item]}>{#if store.week.material[item]}<Icon name="check" size={13} />{/if}</span>
+        {item}
+      </button>
+    {/each}
+    <div class="inline-btn-field" style="margin-top:10px">
+      <input type="text" placeholder="Weiteres Element…" bind:value={neuesMaterial} onkeydown={(e) => e.key === "Enter" && fuegeMaterialHinzu()} />
+      <button class="btn" onclick={fuegeMaterialHinzu}>Hinzufügen</button>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">Textvorlage</div>
     <div class="field">
       <label for="f-gruss">Anrede</label>
@@ -164,3 +213,56 @@
     </div>
   </Sheet>
 {/if}
+
+{#if settingsOpen}
+  <SettingsSheet onclose={() => (settingsOpen = false)} />
+{/if}
+
+<style>
+  .topbar-row { display: flex; align-items: flex-start; gap: 10px; }
+  .gear {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    background: var(--sunk);
+    border: none;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+  .next-card { padding-bottom: 14px; }
+  .next-line { font-size: 14.5px; font-weight: 600; }
+
+  .mat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 9px 2px;
+    font-size: 14.5px;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+  }
+  .mat-row:last-of-type { border-bottom: none; }
+  .mat-row.on { color: var(--text-3); text-decoration: line-through; text-decoration-color: var(--border-strong); }
+  .mat-check {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border-strong);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-ink);
+  }
+  .mat-check.on { background: var(--primary); border-color: var(--primary); }
+</style>

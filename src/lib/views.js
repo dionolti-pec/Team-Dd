@@ -1,5 +1,6 @@
 export const VIEWS = [
   { id: "anw", label: "Woche", icon: "week", hint: "Anwesenheit & Spieltag" },
+  { id: "training", label: "Training", icon: "training", hint: "Übungen & Stoppuhr" },
   { id: "auf", label: "Aufstellung", icon: "lineup", hint: "Formation & A4-Druck" },
   { id: "plan", label: "Spielplan", icon: "schedule", hint: "Termine & Besammlung" },
   { id: "pre", label: "Präsenz", icon: "presence", hint: "Trainingsquote" },

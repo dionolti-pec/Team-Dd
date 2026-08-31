@@ -1,7 +1,7 @@
 <script>
   import Sheet from "../components/Sheet.svelte";
   import { fromIso, fmtIso, iso, WOTAG } from "../lib/date.js";
-  import { spielplan, saveSpielplan, besammlungVon, minusMin, VORLAUF, parsePlan, planText } from "../lib/schedule.js";
+  import { spielplan, saveSpielplan, besammlungVon, minusMin, VORLAUF, parsePlan, planText, saisonBilanz } from "../lib/schedule.js";
   import { fillFromSchedule, refreshSpielplan, store } from "../lib/state.svelte.js";
   import { shareText } from "../lib/share.js";
   import { drucke } from "../lib/print.js";
@@ -75,6 +75,7 @@
 
   const heute = iso(new Date());
   const naechstes = $derived(store.spielplanList.find((g) => g.datum >= heute));
+  const bilanz = $derived(saisonBilanz(store.spielplanList));
 </script>
 
 <div class="topbar">
@@ -83,6 +84,17 @@
 </div>
 
 <div class="page">
+  {#if bilanz.gespielt}
+    <div class="card">
+      <div class="card-title">Saison-Bilanz<span class="meta">{bilanz.toreFuer}:{bilanz.toreGegen} Tore</span></div>
+      <div class="bilanz-row">
+        <div class="bilanz-item"><b>{bilanz.siege}</b><span>Siege</span></div>
+        <div class="bilanz-item"><b>{bilanz.unentschieden}</b><span>Unentsch.</span></div>
+        <div class="bilanz-item"><b>{bilanz.niederlagen}</b><span>Niederl.</span></div>
+      </div>
+    </div>
+  {/if}
+
   {#if !store.spielplanList.length}
     <div class="card"><p class="empty">Noch keine Spiele erfasst.</p></div>
   {:else}
@@ -170,6 +182,11 @@
 {/if}
 
 <style>
+  .bilanz-row { display: flex; gap: 8px; }
+  .bilanz-item { flex: 1; background: var(--sunk); border-radius: var(--radius-md); padding: 10px 6px; text-align: center; }
+  .bilanz-item b { display: block; font-size: 20px; font-weight: 800; }
+  .bilanz-item span { font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+
   .game-row {
     display: grid;
     grid-template-columns: 46px minmax(0, 1fr) auto;

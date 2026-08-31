@@ -12,7 +12,7 @@
     <div class="a4-inner">
       <div class="a4-h">
         <div class="l">
-          <p class="a4-club">Zug 94 · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
+          <p class="a4-club">{store.einstellungen.verein} · {store.einstellungen.stufe} · {store.einstellungen.staerkeklasse} · {store.einstellungen.gruppe}</p>
           <h1 class="a4-t">Team Dd — Spielplan</h1>
         </div>
         <div class="a4-r"><b>{store.spielplanList.length} Spiele</b>Stand {fmtIso(heute)}</div>
@@ -50,7 +50,7 @@
       <p class="pl-note">Besammlung: Heimspiele in Zug 1 Stunde vor Anpfiff, Auswärtsspiele 45 Minuten vor Anpfiff. Abweichungen sind im Plan einzeln vermerkt.</p>
       <p class="a4-foot">
         <span>{kommend} kommende Spiele · {store.spielplanList.length - kommend} gespielt</span>
-        <span>Trainer Dion Ramadani</span>
+        <span>Trainer {store.einstellungen.trainerName}</span>
       </p>
     </div>
   </div>

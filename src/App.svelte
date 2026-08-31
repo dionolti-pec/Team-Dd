@@ -1,6 +1,7 @@
 <script>
   import TabBar from "./components/TabBar.svelte";
   import WeekView from "./views/WeekView.svelte";
+  import TrainingView from "./views/TrainingView.svelte";
   import LineupView from "./views/LineupView.svelte";
   import ScheduleView from "./views/ScheduleView.svelte";
   import PresenceView from "./views/PresenceView.svelte";
@@ -14,7 +15,7 @@
   refreshSpielplan();
   loadWeek();
 
-  const compMap = { anw: WeekView, auf: LineupView, plan: ScheduleView, pre: PresenceView, spl: PlayersView, ana: AnalysisView };
+  const compMap = { anw: WeekView, training: TrainingView, auf: LineupView, plan: ScheduleView, pre: PresenceView, spl: PlayersView, ana: AnalysisView };
 
   let active = $state("anw");
   const Active = $derived(compMap[active]);
