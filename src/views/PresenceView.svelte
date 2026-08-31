@@ -32,19 +32,17 @@
 
 <div class="page">
   <div class="card">
-    <div class="row2">
-      <div class="field">
-        <label for="f-start">Zählen ab</label>
-        <input id="f-start" type="date" value={store.einstellungen.start} onchange={(e) => setEinstellungen({ start: e.target.value || "2026-08-18" })} />
-      </div>
-      <div class="field">
-        <label for="f-sort">Sortierung</label>
-        <select id="f-sort" bind:value={sortBy}>
-          <option value="quote">Schwächste zuerst</option>
-          <option value="nr">Trikotnummer</option>
-          <option value="name">Name</option>
-        </select>
-      </div>
+    <div class="field">
+      <label for="f-start">Zählen ab</label>
+      <input id="f-start" type="date" value={store.einstellungen.start} onchange={(e) => setEinstellungen({ start: e.target.value || "2026-08-18" })} />
+    </div>
+    <div class="field">
+      <label for="f-sort">Sortierung</label>
+      <select id="f-sort" bind:value={sortBy}>
+        <option value="quote">Schwächste zuerst</option>
+        <option value="nr">Trikotnummer</option>
+        <option value="name">Name</option>
+      </select>
     </div>
     <p class="hint">{result.wochen} {result.wochen === 1 ? "erfasste Woche" : "erfasste Wochen"} ab {fmtIso(result.startIso)} · {result.trainings} Trainings gezählt. Verletzungstage zählen nicht gegen den Spieler.</p>
   </div>

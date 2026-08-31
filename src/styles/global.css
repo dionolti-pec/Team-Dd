@@ -32,12 +32,14 @@ h1, h2, h3, p { margin: 0; }
 }
 .topbar .eyebrow {
   font-size: 10.5px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-3);
   font-weight: 700;
   margin: 0 0 4px;
+  line-height: 1.6;
 }
+.topbar .eyebrow .seg { white-space: nowrap; }
 .topbar h1 {
   font-size: 24px;
   font-weight: 800;
@@ -83,6 +85,13 @@ input, select, textarea {
 textarea { min-height: 84px; resize: vertical; line-height: 1.5; }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background: var(--surface); }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 400px) {
+  .row2 { grid-template-columns: 1fr; }
+}
+.inline-btn-field { display: flex; gap: 8px; align-items: stretch; }
+.inline-btn-field input { flex: 1; min-width: 0; }
+.inline-btn-field .btn { flex: none; white-space: nowrap; }
+.field-note { font-size: 11px; color: var(--text-3); margin-top: 2px; }
 
 .btn {
   background: var(--sunk);
@@ -127,6 +136,7 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
 
 .empty { padding: 28px var(--pad); color: var(--text-3); font-size: 13.5px; text-align: center; }
 .hint { color: var(--text-2); font-size: 12.5px; line-height: 1.6; padding: 2px 2px 0; }
+.hint.small { font-size: 11px; color: var(--text-3); text-align: center; padding-top: 6px; }
 
 .kit {
   flex: none;
@@ -192,10 +202,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
   grid-template-columns: minmax(0, 1fr) repeat(3, 40px);
   gap: 6px;
   align-items: center;
-  padding: 8px 4px;
+  padding: 9px 8px;
   border-radius: var(--radius-md);
 }
-.roster-row.hurt { background: var(--sunk); }
+.roster-row:nth-child(even) { background: var(--sunk); }
+.roster-row.hurt { background: var(--hurt-soft); }
 .roster-row .who {
   display: flex;
   align-items: center;

@@ -118,9 +118,12 @@
     <div class="page">
       <div class="card">
         <div class="card-title">Profil</div>
-        <div class="row2">
-          <div class="field"><label for="p-nr">Trikotnummer</label><input id="p-nr" type="number" min="1" max="99" bind:value={form.nr} /></div>
-          <div class="field" style="justify-content:flex-end"><span class="glabel">&nbsp;</span><button class="btn" onclick={saveNumber}>Nummer übernehmen</button></div>
+        <div class="field">
+          <label for="p-nr">Trikotnummer</label>
+          <div class="inline-btn-field">
+            <input id="p-nr" type="number" min="1" max="99" bind:value={form.nr} />
+            <button class="btn" onclick={saveNumber}>Übernehmen</button>
+          </div>
         </div>
         <div class="row2">
           <div class="field">
@@ -144,10 +147,8 @@
 
       <div class="card">
         <div class="card-title">Verletzung / Abmeldung <span class="meta">{vstatus}</span></div>
-        <div class="row2">
-          <div class="field"><label for="p-von">Ab</label><input id="p-von" type="date" bind:value={form.von} /></div>
-          <div class="field"><label for="p-bis">Bis (leer = offen)</label><input id="p-bis" type="date" bind:value={form.bis} /></div>
-        </div>
+        <div class="field"><label for="p-von">Ab</label><input id="p-von" type="date" bind:value={form.von} /></div>
+        <div class="field"><label for="p-bis">Bis</label><input id="p-bis" type="date" bind:value={form.bis} /><span class="field-note">Leer lassen = noch offen</span></div>
         <div class="field"><label for="p-vgrund">Grund</label><input id="p-vgrund" type="text" placeholder="z.B. Bänderriss, Ferien, Schullager" bind:value={form.grund} /></div>
         <div class="btn-row" style="margin-top:12px">
           <button class="btn danger" onclick={saveVerletzung}>Abmelden</button>

@@ -35,7 +35,7 @@
 </script>
 
 <div class="topbar">
-  <p class="eyebrow">Zug 94 · Junioren D-9 · Stärkeklasse 3 · Gruppe 8</p>
+  <p class="eyebrow"><span class="seg">Zug 94</span> · <span class="seg">Junioren D-9</span> · <span class="seg">Stärkeklasse 3</span> · <span class="seg">Gruppe 8</span></p>
   <h1>Team Dd</h1>
   <p class="sub">Trainer Dion Ramadani · Training Di / Do</p>
 </div>
@@ -89,9 +89,7 @@
       </div>
     {/each}
 
-    <p class="hint" style="margin-top:8px">
-      Training: alle <b>dabei</b>, tippen meldet ab. Match: niemand vorausgewählt, tippen bietet auf. Name antippen für <b>Grund</b> der Absenz. Verletzte sind grau und gesperrt.
-    </p>
+    <p class="hint small" style="margin-top:8px">Tippen wechselt An-/Abwesend · Name tippen = Grund</p>
   </div>
 
   <div class="card">
