@@ -3,8 +3,9 @@
   import { fromIso, fmtIso, iso, WOTAG } from "../lib/date.js";
   import { spielplan, saveSpielplan, besammlungVon, minusMin, VORLAUF, parsePlan, planText, saisonBilanz } from "../lib/schedule.js";
   import { fillFromSchedule, refreshSpielplan, store } from "../lib/state.svelte.js";
-  import { shareText } from "../lib/share.js";
+  import { shareText, shareFile } from "../lib/share.js";
   import { drucke } from "../lib/print.js";
+  import { icsBlob } from "../lib/calendar.js";
 
   let editing = $state(null); // game object or {} for new
   let pasting = $state(false);
@@ -72,6 +73,9 @@
   function printA4() {
     drucke("plan", document.getElementById("sheetPlan"));
   }
+  function shareCalendar() {
+    shareFile(icsBlob(), "team-dd-kalender.ics", (t) => (store.statusText = t));
+  }
 
   const heute = iso(new Date());
   const naechstes = $derived(store.spielplanList.find((g) => g.datum >= heute));
@@ -131,6 +135,10 @@
     <button class="btn quiet" onclick={() => shareText(planText(), (t) => (store.statusText = t))}>Spielplan teilen</button>
     <button class="btn quiet" onclick={printA4}>Auf A4 drucken</button>
   </div>
+  <div class="btn-row">
+    <button class="btn quiet" onclick={shareCalendar}>Kalender teilen (.ics)</button>
+  </div>
+  <p class="hint">Enthält Training ({store.einstellungen.trainingstage}, {store.einstellungen.trainingBeginn}–{store.einstellungen.trainingEnde}) als wiederkehrenden Termin sowie alle Spiele mit Anpfiffzeit.</p>
 </div>
 
 {#if editing}

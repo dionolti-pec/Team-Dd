@@ -41,6 +41,8 @@ const EINST_STD = {
   gruppe: "Gruppe 8",
   trainerName: "Dion Ramadani",
   trainingstage: "Di / Do",
+  trainingBeginn: "18:00",
+  trainingEnde: "19:30",
 };
 
 function blankWeek() {
