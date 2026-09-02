@@ -1,5 +1,6 @@
 import { store } from "./state.svelte.js";
 import { besammlungVon } from "./schedule.js";
+import { shareFile } from "./share.js";
 
 const WEEKDAY_ICAL = { di: "TU", do: "TH" };
 const WEEKDAY_JS = { di: 2, do: 4 }; // Date.getDay(): So=0 … Sa=6
@@ -75,4 +76,23 @@ export function buildICS() {
 
 export function icsBlob() {
   return new Blob([buildICS()], { type: "text/calendar;charset=utf-8" });
+}
+
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+/**
+ * iOS Safari öffnet einen als text/calendar navigierten data:-URI direkt in
+ * der Kalender-App ("Termin hinzufügen"), aber nur bei echter Navigation —
+ * ein <a download>-Blob landet dort nur in Dateien. Auf anderen Plattformen
+ * bleibt der bisherige Teilen/Download-Weg zuverlässiger.
+ */
+export function addToCalendar(onStatus) {
+  const ics = buildICS();
+  if (isIOS()) {
+    window.location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+    return;
+  }
+  shareFile(new Blob([ics], { type: "text/calendar;charset=utf-8" }), "team-dd-kalender.ics", onStatus);
 }
