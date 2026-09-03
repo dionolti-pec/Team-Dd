@@ -136,9 +136,9 @@
     <button class="btn quiet" onclick={printA4}>Auf A4 drucken</button>
   </div>
   <div class="btn-row">
-    <button class="btn quiet" onclick={shareCalendar}>Zum Kalender hinzufügen</button>
+    <button class="btn quiet" onclick={shareCalendar}>Kalenderdatei sichern</button>
   </div>
-  <p class="hint">Enthält Training ({store.einstellungen.trainingstage}, {store.einstellungen.trainingBeginn}–{store.einstellungen.trainingEnde}) als wiederkehrenden Termin sowie alle Spiele mit Anpfiffzeit.</p>
+  <p class="hint">Enthält Training ({store.einstellungen.trainingstage}, {store.einstellungen.trainingBeginn}–{store.einstellungen.trainingEnde}) als wiederkehrenden Termin sowie alle Spiele mit Anpfiffzeit. Auf dem iPhone: beim Teilen-Menü <b>„In Dateien sichern“</b> wählen, dann die Datei in der Dateien-App öffnen — dort erscheint „Alle Termine hinzufügen“.</p>
 </div>
 
 {#if editing}

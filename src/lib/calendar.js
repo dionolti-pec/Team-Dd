@@ -78,21 +78,14 @@ export function icsBlob() {
   return new Blob([buildICS()], { type: "text/calendar;charset=utf-8" });
 }
 
-function isIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-}
-
 /**
- * iOS Safari öffnet einen als text/calendar navigierten data:-URI direkt in
- * der Kalender-App ("Termin hinzufügen"), aber nur bei echter Navigation —
- * ein <a download>-Blob landet dort nur in Dateien. Auf anderen Plattformen
- * bleibt der bisherige Teilen/Download-Weg zuverlässiger.
+ * Eine data:-URI-Direktnavigation übernimmt auf iOS zuverlässig nur den
+ * ERSTEN Termin einer .ics-Datei und lässt den Rest weg — bei mehreren
+ * Terminen (Trainings + Spiele) fehlt dann das meiste. Der zuverlässige Weg
+ * für mehrere Termine ist: Datei über "Teilen" sichern, dann aus Dateien
+ * öffnen — das zeigt "Alle X Termine hinzufügen".
  */
 export function addToCalendar(onStatus) {
   const ics = buildICS();
-  if (isIOS()) {
-    window.location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
-    return;
-  }
   shareFile(new Blob([ics], { type: "text/calendar;charset=utf-8" }), "team-dd-kalender.ics", onStatus);
 }
