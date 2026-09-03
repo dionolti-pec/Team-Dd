@@ -7,11 +7,12 @@
   import {
     store, DAYS, DAY_LABEL, DAY_OFF, MARK,
     attOf, setAtt, grundVon, setGrund, istVerletzt, tagIso, counts, toggleMaterial,
-    prevWeek, nextWeek, resetWeek, saveWeek, buildListText, setEinstellungen,
+    prevWeek, nextWeek, resetWeek, saveWeek, buildListText, setEinstellungen, goToTab,
   } from "../lib/state.svelte.js";
   import { shareText } from "../lib/share.js";
   import { naechstesSpiel, besammlungVon } from "../lib/schedule.js";
   import { materialListe, addMaterial } from "../lib/material.js";
+  import { praesenz } from "../lib/presence.js";
 
   let grundFor = $state(null);
   let settingsOpen = $state(false);
@@ -20,6 +21,21 @@
 
   const nextGame = $derived(naechstesSpiel());
   const daysUntil = $derived(nextGame ? Math.round((fromIso(nextGame.datum) - fromIso(iso(new Date()))) / 86400000) : null);
+
+  const verletztCount = $derived(store.kader.filter(([nr]) => istVerletzt(nr, iso(new Date()))).length);
+  const praesenzQuote = $derived.by(() => {
+    const { stat } = praesenz();
+    const quoten = Object.values(stat).filter((s) => s.moeglich > 0).map((s) => s.da / s.moeglich);
+    if (!quoten.length) return null;
+    return Math.round((quoten.reduce((a, b) => a + b, 0) / quoten.length) * 100);
+  });
+
+  const QUICK_ACTIONS = [
+    { id: "training", label: "Training", icon: "training" },
+    { id: "auf", label: "Aufstellung", icon: "lineup" },
+    { id: "plan", label: "Spielplan", icon: "schedule" },
+    { id: "spl", label: "Spieler", icon: "players" },
+  ];
 
   function fuegeMaterialHinzu() {
     const name = neuesMaterial.trim();
@@ -64,6 +80,30 @@
 </div>
 
 <div class="page">
+  <div class="stat-row">
+    <div class="stat-tile">
+      <b>{store.kader.length}</b>
+      <span>Kader</span>
+    </div>
+    <div class="stat-tile" class:warn={verletztCount > 0}>
+      <b>{verletztCount}</b>
+      <span>Verletzt</span>
+    </div>
+    <div class="stat-tile">
+      <b>{praesenzQuote == null ? "–" : praesenzQuote + "%"}</b>
+      <span>Ø Präsenz</span>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    {#each QUICK_ACTIONS as a}
+      <button class="qa-item" onclick={() => goToTab(a.id)}>
+        <span class="qa-icon"><Icon name={a.icon} size={20} /></span>
+        {a.label}
+      </button>
+    {/each}
+  </div>
+
   {#if nextGame}
     <div class="card next-card">
       <div class="card-title">Nächstes Spiel<span class="meta">{daysUntil === 0 ? "heute" : daysUntil === 1 ? "morgen" : "in " + daysUntil + " Tagen"}</span></div>
@@ -219,6 +259,46 @@
 {/if}
 
 <style>
+  .stat-row { display: flex; gap: 8px; }
+  .stat-tile {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .stat-tile b { display: block; font-size: 19px; font-weight: 800; line-height: 1.1; }
+  .stat-tile span { font-size: 10px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+  .stat-tile.warn b { color: var(--danger); }
+
+  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .qa-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 12px 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .qa-item:active { background: var(--sunk); }
+  .qa-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .topbar-row { display: flex; align-items: flex-start; gap: 10px; }
   .gear {
     flex: none;

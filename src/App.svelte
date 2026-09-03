@@ -9,7 +9,7 @@
   import AnalysisView from "./views/AnalysisView.svelte";
   import LineupSheet from "./print/LineupSheet.svelte";
   import ScheduleSheet from "./print/ScheduleSheet.svelte";
-  import { ladeKader, loadWeek, refreshSpielplan } from "./lib/state.svelte.js";
+  import { store, ladeKader, loadWeek, refreshSpielplan, goToTab } from "./lib/state.svelte.js";
 
   ladeKader();
   refreshSpielplan();
@@ -17,19 +17,13 @@
 
   const compMap = { anw: WeekView, training: TrainingView, auf: LineupView, plan: ScheduleView, pre: PresenceView, spl: PlayersView, ana: AnalysisView };
 
-  let active = $state("anw");
-  const Active = $derived(compMap[active]);
-
-  function selectTab(id) {
-    active = id;
-    window.scrollTo(0, 0);
-  }
+  const Active = $derived(compMap[store.activeTab]);
 </script>
 
 <div class="app">
   <Active />
 </div>
-<TabBar active={active} onselect={selectTab} />
+<TabBar active={store.activeTab} onselect={goToTab} />
 
 <LineupSheet />
 <ScheduleSheet />

@@ -4,28 +4,47 @@ import { STD_FORM, ALT_FORM } from "./formations.js";
 import { spielAm, besammlungVon, spielplan } from "./schedule.js";
 
 const KADER_STD = [
-  [1, "Abede", "Raee"],
+  [1, "Procopio", "Eren Daniele"],
   [2, "Aikens", "Leonidas Patrick"],
-  [3, "Beluli", "Arbes"],
-  [4, "Brunner", "Mischa"],
-  [5, "Dedaj", "Alexander"],
-  [6, "El Yagoubi", "Adam"],
-  [8, "Etoski", "Emir"],
-  [9, "Huggel", "Frederik"],
-  [10, "Kostelac", "Lovro Roko"],
-  [11, "Mäkäla", "Samuel"],
-  [12, "Misic", "Aleksa"],
-  [13, "Monk", "Alexandr"],
-  [14, "Okbazghi", "Christian"],
-  [15, "Payo", "Nevio Sanchez"],
-  [16, "Procopio", "Eren Daniele"],
-  [17, "Ramadani", "Olti"],
+  [3, "Theuner", "Titus"],
+  [4, "Kostelac", "Lovro Roko"],
+  [5, "Singh", "Pravir Partap"],
+  [6, "Simic", "Jonas"],
+  [7, "Beluli", "Arbes"],
+  [8, "Misic", "Aleksa"],
+  [9, "Payo", "Nevio Sanchez"],
+  [10, "Huggel", "Frederik"],
+  [11, "Brunner", "Mischa"],
+  [12, "Abede", "Raee"],
+  [13, "Dedaj", "Alexander"],
+  [14, "Turoczy", "Elek"],
+  [15, "Ramadani", "Olti"],
+  [16, "Okbazghi", "Christian"],
+  [17, "El Yagoubi", "Adam"],
   [18, "Saratz", "Mic-Andri"],
-  [19, "Simic", "Jonas"],
-  [20, "Singh", "Pravir Partap"],
-  [21, "Turoczy", "Elek"],
-  [22, "Theuner", "Titus"],
+  [25, "Etoski", "Emir"],
+  [55, "Monk", "Alexandr"],
+  [99, "Mäkäla", "Samuel"],
 ];
+
+/* Positionen, wie sie im echten Kader bereits gepflegt sind — nur als
+   Startwert für ein frisches Gerät ohne eigene td:profil:*-Einträge. */
+const PROFIL_STD = {
+  1: { pos: "Torhüter" },
+  2: { pos: "Aussenverteidiger" },
+  3: { pos: "Innenverteidiger" },
+  5: { pos: "Innenverteidiger" },
+  6: { pos: "Zentrales Mittelfeld" },
+  7: { pos: "Flügel" },
+  9: { pos: "Stürmer" },
+  10: { pos: "Flügel" },
+  11: { pos: "Zentrales Mittelfeld" },
+  12: { pos: "Aussenverteidiger" },
+  14: { pos: "Flügel" },
+  15: { pos: "Flügel" },
+  16: { pos: "Aussenverteidiger" },
+  17: { pos: "Torhüter" },
+};
 
 export const DAYS = ["di", "do", "ma"];
 export const DAY_LABEL = { di: "Dienstag", do: "Donnerstag", ma: "Match" };
@@ -66,7 +85,13 @@ export const store = $state({
   statusText: "Bereit",
   profileTick: 0,
   spielplanList: [],
+  activeTab: "anw",
 });
+
+export function goToTab(id) {
+  store.activeTab = id;
+  window.scrollTo(0, 0);
+}
 
 export function refreshSpielplan() {
   store.spielplanList = spielplan();
@@ -97,8 +122,9 @@ export function vorname(nr) {
 export const kurzname = vorname;
 
 export function profil(nr) {
+  const std = PROFIL_STD[nr] || {};
   const p = readJSON(profilKey(nr), {});
-  return { pos: p.pos || "", fuss: p.fuss || "", notiz: p.notiz || "", verletzt: p.verletzt || null };
+  return { pos: p.pos || std.pos || "", fuss: p.fuss || std.fuss || "", notiz: p.notiz || "", verletzt: p.verletzt || null };
 }
 export function saveProfil(nr, patch) {
   const cur = profil(nr);
